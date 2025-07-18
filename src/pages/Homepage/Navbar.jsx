@@ -1,3 +1,4 @@
+import GetSecuredNow from './components/GetSecuredNow';
 import React from "react";
 
 const Navbar = () => {
@@ -12,9 +13,7 @@ const Navbar = () => {
           <div>Health</div>
           <div>About us</div>
         </div>
-        <button className=" bg-[#FF7043] rounded-sm p-5 hover:scale-105">
-          Get Secured Now
-        </button>
+<GetSecuredNow     />
       </div>
     </div>
   );

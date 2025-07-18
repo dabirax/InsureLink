@@ -1,5 +1,6 @@
 import React from "react";
 import bg1 from "../../assets/heroBg1.png";
+import GetSecuredNow from "./components/GetSecuredNow";
 
 const Hero = () => {
   return (
@@ -12,7 +13,7 @@ const Hero = () => {
       ></div>
 
       {/* Content */}
-      <div className="relative z-20 top-1/2 text-white px-22 flex flex-col items-start gap-4 w-1/2">
+      <div className="relative z-20 top-1/2 text-[#fdfdfdd4] px-22 flex flex-col items-start gap-4 w-1/2">
         <h1 className="text-5xl ">
           Life happens but <span className="text-[#FF7043]">InsureLink</span>{" "}
           dey your back gidigbam!
@@ -21,9 +22,9 @@ const Hero = () => {
           You don’t have to break a bank to get insured! With InsureLink, you
           can be secured with what you can afford.
         </h3>
-        <div>
-          <button>Get Secured Now</button>
-          <button>Learn More</button>
+        <div className="flex gap-4 mt-4">
+          <GetSecuredNow/>
+          <button className="hover:underline hover:scale-105 p-5">Learn More</button>
         </div>
       </div>
     </div>
