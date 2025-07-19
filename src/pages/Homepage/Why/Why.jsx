@@ -1,3 +1,4 @@
+import SubWhy from "./SubWhy";
 import Title from "../components/Title";
 import React from "react";
 import why1 from "../../../assets/why1.png";
@@ -38,7 +39,7 @@ const data = [
 
 const Why = () => {
   return (
-    <div className="p-22 ">
+    <div className="p-22 font-poppins ">
       {/* Title */}
       <div>
         <Title
@@ -53,18 +54,7 @@ const Why = () => {
         {data.map((item) => {
           const { id, title, description, img } = item;
           return (
-            
-              <div key={id} className="bg-[#F8F8F8]  rounded-lg shadow-md p-5">
-                <div className="">
-                  <img src={img} alt={title} className="w-64" />
-                </div>
-                <div className="w-3/5">
-                  <h2 className="text-2xl font-semibold text-[#453939]">
-                    {title}
-                  </h2>
-                  <p className="text-[#453939]">{description}</p>
-                </div>
-              </div>
+            <SubWhy id={id} img={img} title={title} description={description} />
           );
         })}
       </div>
