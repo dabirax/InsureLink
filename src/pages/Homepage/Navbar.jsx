@@ -1,9 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
     <div className="font-poppins flex justify-between items-center p-4 bg-gray-800 text-white">
-      <div className=" text-[#FF7043]">InsureLink</div>
+      <Link to="/" className="text-[#FF7043]">InsureLink</Link>
       <div className="flex items-center gap-24">
         <div className="flex gap-2">
           <div>Home</div>
@@ -12,7 +13,11 @@ const Navbar = () => {
           <div>Health</div>
           <div>About us</div>
         </div>
-        <button className=" bg-[#FF7043] rounded-sm p-5 hover:scale-105">Get Secured Now</button>
+        <Link to="/signup">
+          <button className="bg-[#FF7043] rounded-sm p-5 hover:scale-105">
+            Get started
+          </button>
+        </Link>
       </div>
     </div>
   );
