@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import logoImage from '../../Group 47603.png'; // Going up 2 levels from pages/Auth/ to src/
+import logoImage from '../../InsureLink.jpg'; // Assuming the logo path is correct
 import codeHandImage from '../../CodeHand.png'; // The image from figma
 
 const VerifyCode = () => {
@@ -9,24 +9,27 @@ const VerifyCode = () => {
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [codeFocused, setCodeFocused] = useState(false);
   const inputRefs = useRef([]);
+  const [isSubmitting, setIsSubmitting] = useState(false); // State for loading indicator
+  const [successMessage, setSuccessMessage] = useState(''); // State for success messages
+  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
 
   // Get email and source from navigation state
   const email = location.state?.email || '';
-  const source = location.state?.source || 'signup';
+  const source = location.state?.source || 'signup'; // 'signup' or 'forgot-password'
 
   // Dynamic content based on source
   const getContent = () => {
     if (source === 'forgot-password') {
       return {
         title: 'Verify code',
-        description: 'An authentication code has been sent to your email.',
+        description: `An authentication code has been sent to your email: ${email}.`,
         resendText: "Didn't receive a code?",
         backText: 'Back to login'
       };
     } else {
       return {
         title: 'Verify code',
-        description: 'An authentication code has been sent to your email.',
+        description: `An authentication code has been sent to your email: ${email}.`,
         resendText: "Didn't receive a code?",
         backText: 'Back to login'
       };
@@ -36,10 +39,16 @@ const VerifyCode = () => {
   const content = getContent();
 
   useEffect(() => {
+    // Initialize inputRefs.current to an array of the correct size
     inputRefs.current = inputRefs.current.slice(0, 6);
+    // Focus the first input field on component mount
+    inputRefs.current[0]?.focus();
   }, []);
 
   const handleInputChange = (index, value) => {
+    setErrorMessage(''); // Clear errors on input change
+    setSuccessMessage(''); // Clear success messages on input change
+
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newCode = [...code];
       newCode[index] = value;
@@ -58,18 +67,57 @@ const VerifyCode = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
+    setIsSubmitting(true);
+
     const verificationCode = code.join('');
-    console.log('Verification code:', verificationCode);
-    
-    // Handle verification logic here
-    if (source === 'forgot-password') {
-      // Redirect to reset password page or login
-      navigate('/login');
-    } else {
-      // Redirect to dashboard or login after successful verification
-      navigate('/login');
+
+    if (verificationCode.length !== 6) {
+      setErrorMessage('Please enter the complete 6-digit code.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Backend endpoint for email verification: POST /auth/verify-email-otp/
+      const response = await fetch('https://Insurelink.onrender.com/auth/verify-email-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          code: verificationCode,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccessMessage('Code verified successfully! Redirecting to login...');
+        setTimeout(() => {
+          // Redirect to login after successful verification
+          // For 'forgot-password' source, you might redirect to a reset password page here
+          navigate('/login');
+        }, 1500);
+      } else {
+        const errorData = await response.json();
+        console.error('Verification error:', errorData);
+        setErrorMessage(errorData.detail || `Verification failed: ${response.status}. Please try again.`);
+      }
+    } catch (error) {
+      console.error('Network or unexpected error during verification:', error);
+      if (error instanceof TypeError) {
+        setErrorMessage('Network error: Could not connect to the server. Please ensure the backend is running and accessible.');
+      } else if (error instanceof SyntaxError) {
+        setErrorMessage('Server returned an invalid response. Please check backend logs.');
+      } else {
+        setErrorMessage('An unexpected error occurred. Please try again later.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -77,9 +125,35 @@ const VerifyCode = () => {
     navigate('/login');
   };
 
-  const handleResendCode = () => {
-    console.log('Resending code to:', email);
-    // Handle resend logic here
+  const handleResendCode = async () => {
+    setErrorMessage('');
+    setSuccessMessage('');
+    setIsSubmitting(true); // Indicate loading for resend
+
+    try {
+      // Backend endpoint for resending OTP (using forgot-password-otp as a general OTP send)
+      // NOTE: If your backend has a dedicated 'resend verification OTP' endpoint, use that instead.
+      const response = await fetch('https://Insurelink.onrender.com/auth/forgot-password-otp/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: email }),
+      });
+
+      if (response.ok) {
+        setSuccessMessage('New code sent to your email. Please check your inbox.');
+      } else {
+        const errorData = await response.json();
+        console.error('Resend code error:', errorData);
+        setErrorMessage(errorData.detail || `Failed to resend code: ${response.status}. Please try again.`);
+      }
+    } catch (error) {
+      console.error('Network or unexpected error during resend:', error);
+      setErrorMessage('An unexpected error occurred while resending the code. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -89,10 +163,10 @@ const VerifyCode = () => {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="mb-6">
-            <a href="#" className="inline-block">
-              <img 
+            <a href="#" className="inline-block cursor-pointer">
+              <img
                 src={logoImage}
-                alt="InsureLink" 
+                alt="InsureLink"
                 className="h-8 w-auto hover:opacity-80 transition-opacity"
               />
             </a>
@@ -100,7 +174,7 @@ const VerifyCode = () => {
 
           {/* Back to login */}
           <div className="mb-4">
-            <button 
+            <button
               onClick={handleBackToLogin}
               className="flex items-center text-gray-600 hover:text-[#FF7043] transition-colors text-sm cursor-pointer"
             >
@@ -119,11 +193,23 @@ const VerifyCode = () => {
             </p>
           </div>
 
+          {/* Success/Error Message Display */}
+          {successMessage && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+              <span className="block sm:inline">{successMessage}</span>
+            </div>
+          )}
+          {errorMessage && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+              <span className="block sm:inline">{errorMessage}</span>
+            </div>
+          )}
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Code Input Field with Floating Label */}
             <div className="relative">
-              <div 
+              <div
                 className={`flex space-x-2 p-4 border-2 rounded-lg transition-all duration-200 ${
                   codeFocused ? 'border-[#FF7043]' : 'border-gray-200'
                 }`}
@@ -151,9 +237,9 @@ const VerifyCode = () => {
                 ))}
               </div>
               <label
-                className={`absolute left-3 px-1 bg-white transition-all duration-200 pointer-events-none 
-                  ${codeFocused || code.some(digit => digit) 
-                    ? 'top-0 -translate-y-1/2 text-xs text-[#FF7043]' 
+                className={`absolute left-3 px-1 bg-white transition-all duration-200 pointer-events-none
+                  ${codeFocused || code.some(digit => digit)
+                    ? 'top-0 -translate-y-1/2 text-xs text-[#FF7043]'
                     : 'top-1/2 -translate-y-1/2 text-gray-400'
                   }`}
               >
@@ -168,9 +254,10 @@ const VerifyCode = () => {
                 <button
                   type="button"
                   onClick={handleResendCode}
-                  className="text-[#FF7043] hover:text-[#E55A35] font-medium cursor-pointer"
+                  disabled={isSubmitting} // Disable resend button while submitting
+                  className="text-[#FF7043] hover:text-[#E55A35] font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Resend
+                  {isSubmitting ? 'Sending...' : 'Resend'}
                 </button>
               </p>
             </div>
@@ -178,9 +265,10 @@ const VerifyCode = () => {
             {/* Verify Button */}
             <button
               type="submit"
-              className="w-full bg-[#FF7043] text-white py-2.5 px-4 rounded-lg hover:bg-[#E55A35] transition-colors font-medium cursor-pointer"
+              disabled={isSubmitting}
+              className="w-full bg-[#FF7043] text-white py-2.5 px-4 rounded-lg hover:bg-[#E55A35] transition-colors font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Verify
+              {isSubmitting ? 'Verifying...' : 'Verify'}
             </button>
           </form>
 
@@ -223,9 +311,9 @@ const VerifyCode = () => {
         <div className="w-80 h-80 bg-white rounded-2xl p-8 flex items-center justify-center shadow-lg">
           {/* Code Hand Illustration */}
           <div className="text-center">
-            <img 
+            <img
               src={codeHandImage}
-              alt="Security verification illustration" 
+              alt="Security verification illustration"
               className="w-full h-full object-contain"
             />
           </div>
