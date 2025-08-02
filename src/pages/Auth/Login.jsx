@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import logoImage from "../../assets/InsureLink.jpg";
+import { Eye, EyeOff } from "lucide-react";
 import LeftSection from "./components/LeftSection";
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from "lucide-react";
+import '../../index.css'; // Ensure global styles are applied
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
@@ -20,13 +21,20 @@ const Login = () => {
   // Dynamic greeting logic for the login page header
   const [greeting, setGreeting] = useState("");
   useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) {
-      setGreeting("Good morning");
-    } else if (hour < 18) {
-      setGreeting("Good afternoon");
-    } else {
-      setGreeting("Good evening");
+    try {
+      const hour = new Date().getHours();
+      if (hour < 12) {
+        setGreeting("Good morning");
+      } else if (hour < 18) {
+        setGreeting("Good afternoon");
+      } else {
+        setGreeting("Good evening");
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error setting greeting:", error);
+      setGreeting("Hello");
+      setIsLoading(false);
     }
   }, []);
 
@@ -37,6 +45,25 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+
+    // Basic form validation
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage("Please fill in both email and password fields.");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -94,18 +121,38 @@ const Login = () => {
     }
   };
 
-  const handleForgotPassword = (e) => {
-    e.preventDefault();
-    navigate("/forgot-password");
+  const handleForgotPassword = () => {
+    try {
+      navigate("/forgot-password");
+    } catch (error) {
+      console.error("Navigation error:", error);
+      setErrorMessage("Navigation failed. Please try again.");
+    }
   };
 
   // Handlers for social login buttons to prevent page refresh
-  const handleSocialLogin = (e) => {
-    e.preventDefault();
-    setErrorMessage(
-      "This functionality is not yet implemented. Please use the email and password fields."
-    );
+  const handleSocialLogin = (provider) => {
+    try {
+      setErrorMessage(
+        `${provider} login is not yet implemented. Please use the email and password fields.`
+      );
+    } catch (error) {
+      console.error("Social login error:", error);
+      setErrorMessage("An error occurred. Please try again.");
+    }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-[#FF7043] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -121,10 +168,12 @@ const Login = () => {
           {/* Login Header */}
           <div className="relative mb-6">
             <button
-              className="bg-[#FF7043] text-white rounded-full p-1 absolute hover:scale-105"
+              className="bg-[#FF7043] text-white rounded-full p-1 absolute hover:scale-105 transition-transform duration-200"
               onClick={() => navigate(-1)}
+              aria-label="Go back to previous page"
+              type="button"
             >
-              <ArrowLeft />
+              <ArrowLeft size={20} />
             </button>
             <h1 className="flex justify-center w-full mb-6 text-3xl font-bold text-gray-900">
               {greeting}!
@@ -232,13 +281,13 @@ const Login = () => {
                   Remember this device
                 </label>
               </div>
-              <a
-                href="#"
+              <button
                 onClick={handleForgotPassword}
-                className="font-medium text-sm text-[#FF7043] hover:text-[#E55A35] transition-colors cursor-pointer"
+                className="font-medium text-sm text-[#FF7043] hover:text-[#E55A35] transition-colors cursor-pointer bg-transparent border-none underline"
+                type="button"
               >
                 Forgot password?
-              </a>
+              </button>
             </div>
 
             {/* Login Button */}
@@ -258,12 +307,13 @@ const Login = () => {
           {/* Sign Up Link */}
           <p className="mt-4 text-sm text-center text-gray-600">
             Don't have an account?{" "}
-            <a
-              href="/signup"
-              className="text-[#FF7043] hover:text-[#E55A35] font-medium transition-colors cursor-pointer"
+            <button
+              onClick={() => navigate("/signup")}
+              className="text-[#FF7043] hover:text-[#E55A35] font-medium transition-colors cursor-pointer bg-transparent border-none underline"
+              type="button"
             >
               Sign up
-            </a>
+            </button>
           </p>
 
           {/* Social Login Divider */}
@@ -276,7 +326,7 @@ const Login = () => {
             {/* Facebook Button */}
             <button
               type="button"
-              onClick={handleSocialLogin}
+              onClick={() => handleSocialLogin("Facebook")}
               className="flex-1 flex items-center justify-center py-2.5 px-4 border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors cursor-pointer"
               aria-label="Login with Facebook"
             >
@@ -287,7 +337,7 @@ const Login = () => {
             {/* Google Button - CORRECTED SVG PATH */}
             <button
               type="button"
-              onClick={handleSocialLogin}
+              onClick={() => handleSocialLogin("Google")}
               className="flex-1 flex items-center justify-center py-2.5 px-4 border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors cursor-pointer"
               aria-label="Login with Google"
             >
@@ -313,7 +363,7 @@ const Login = () => {
             {/* Apple Button */}
             <button
               type="button"
-              onClick={handleSocialLogin}
+              onClick={() => handleSocialLogin("Apple")}
               className="flex-1 flex items-center justify-center py-2.5 px-4 border border-orange-300 rounded-lg hover:bg-orange-50 transition-colors cursor-pointer"
               aria-label="Login with Apple"
             >
