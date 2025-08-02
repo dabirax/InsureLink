@@ -1,1276 +1,854 @@
-import React, { useState, useEffect, useRef } from "react";
-import InsureLinkLogo from "../../assets/InsureLink.jpg";
-import OpayLogo from "../../assets/opay.png";
-import MoniepointLogo from "../../assets/moniepoint.png";
+import React, { useState, useEffect } from "react";
 import {
-  Shield, ArrowLeft, CreditCard, Smartphone, Building, Calendar,
-  CheckCircle, Star, Lock, Zap, TrendingUp, Award, Users,
-  Info, AlertCircle, Gift, Sparkles, Crown, Heart, Target,
-  Phone, Mail, MessageCircle, FileText, Download, RefreshCw,
-  ChevronRight, Plus, Minus, Eye, EyeOff, Copy, Check, Edit3,
-  Trash2, Save
+ Shield, ArrowLeft, Smartphone, Building, Calendar,
+ CheckCircle, Star, Lock, Zap, TrendingUp, Award, Users,
+ Info, AlertCircle, Gift, Sparkles, Crown, Heart, Target,
+ Phone, Mail, MessageCircle, FileText, Download, RefreshCw,
+ ChevronRight, Plus, Minus, Eye, EyeOff, Copy, Check, Edit3,
+ Trash2, Save, Store, Truck, Factory, Laptop, Coffee, ShoppingBag,
+ Home, Car, Wrench, Briefcase, Camera, Scissors, Book, Music
 } from 'lucide-react';
 
-// Import images - these will be handled properly in the component
-
+// Import actual images
+import InsureLinkLogo from '../../InsureLink.jpg'; // Path to your logo
+import OpayLogo from '../../opay.png'; // Assuming opay.png is in src/
+import MoniepointLogo from '../../moniepoint.png'; // Assuming moniepoint.png is in src/
 
 const PaymentPage = () => {
-  const [subscriptionStep, setSubscriptionStep] = useState('form'); // 'form', 'processing', 'success'
-  const [userDetails, setUserDetails] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+234 809 876 5432',
-    businessName: 'Doe\'s Electronics Ltd'
-  });
-  const [formData, setFormData] = useState({
-    amount: '500',
-    frequency: 'Monthly',
-    startDate: '',
-    endDate: '',
-    paymentMethod: 'opay', // Default to OPay, as per the first option
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    nameOnCard: '',
-    saveMethod: false, // Renamed from saveCard for generality
-    bankAccount: '',
-    accountName: '',
-    bankName: '',
-    ussdCode: '',
-    editingAccount: false,
-    currentEditingMethodId: null, // To track which saved method is being edited
-    newMethodType: null, // To track which new method type form is active (card, transfer, ussd)
-  });
-  const [savedPaymentMethods, setSavedPaymentMethods] = useState([
-    {
-      id: 'opay-1',
-      type: 'opay',
-      name: 'John Doe OPay',
-      accountNumber: '****5673',
-      isDefault: true,
-      logo: OpayLogo
-    },
-    {
-      id: 'moniepoint-1',
-      type: 'moniepoint',
-      name: 'Business Account',
-      accountNumber: '****8942',
-      isDefault: false,
-      logo: MoniepointLogo
-    }
-  ]);
-  const [showCvv, setShowCvv] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState('professional');
-  const [downloadingPolicy, setDownloadingPolicy] = useState(false);
+ const [selectedPackage, setSelectedPackage] = useState('retail-pro');
+ const [processingPayment, setProcessingPayment] = useState(false);
+ const [showSecurityLoader, setShowSecurityLoader] = useState(false);
 
-  // useRef to store the policy number so it doesn't regenerate
-  const policyNumberRef = useRef(null);
+ // User information
+ const userName = "Etim Bassey";
 
-  // Generate policy number only once
-  if (!policyNumberRef.current) {
-    policyNumberRef.current = `IL-2025-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-  }
+ // Insurance packages tailored for Nigerian SMEs
+ const insurancePackages = [
+   {
+     id: 'retail-basic',
+     name: 'Retail Shield Basic',
+     category: 'Retail & Trading',
+     icon: Store,
+     dailyPrice: 72,
+     weeklyPrice: 500,
+     monthlyPrice: 2200,
+     yearlyPrice: 24000,
+     coverage: '₦2,500,000',
+     description: 'Perfect for small shops, kiosks, and market traders',
+     features: [
+       'Fire & Theft Protection',
+       'Stock Coverage',
+       'WhatsApp Claims Support',
+       'Basic Liability Coverage',
+       '24/7 Emergency Hotline'
+     ],
+     popular: false,
+     color: 'from-blue-500 to-blue-600',
+     businesses: ['Shops', 'Kiosks', 'Market Stalls', 'Mini-Markets']
+   },
+   {
+     id: 'retail-pro',
+     name: 'Retail Shield Pro',
+     category: 'Retail & Trading',
+     icon: ShoppingBag,
+     dailyPrice: 103,
+     weeklyPrice: 720,
+     monthlyPrice: 3100,
+     yearlyPrice: 34000,
+     coverage: '₦5,000,000',
+     description: 'Comprehensive protection for growing retail businesses',
+     features: [
+       'All Basic Features',
+       'Equipment & Machinery Coverage',
+       'Business Interruption Insurance',
+       'Product Liability Protection',
+       'Employee Accident Coverage',
+       'Priority Claims Processing'
+     ],
+     popular: true,
+     color: 'from-[#FF7043] to-orange-500',
+     businesses: ['Supermarkets', 'Fashion Stores', 'Electronics Shops', 'Pharmacies']
+   },
+   {
+     id: 'logistics-standard',
+     name: 'Logistics Guardian',
+     category: 'Transportation & Logistics',
+     icon: Truck,
+     dailyPrice: 89,
+     weeklyPrice: 620,
+     monthlyPrice: 2700,
+     yearlyPrice: 29500,
+     coverage: '₦4,000,000',
+     description: 'Essential coverage for delivery and transport services',
+     features: [
+       'Vehicle Insurance Coverage',
+       'Goods in Transit Protection',
+       'Third Party Liability',
+       'Driver Accident Coverage',
+       'Theft & Hijacking Protection',
+       'GPS Tracking Discount'
+     ],
+     popular: false,
+     color: 'from-green-500 to-green-600',
+     businesses: ['Delivery Services', 'Logistics Companies', 'Transport Operators', 'E-commerce Fulfillment']
+   },
+   {
+     id: 'manufacturing-basic',
+     name: 'Manufacturing Guard',
+     category: 'Manufacturing & Production',
+     icon: Factory,
+     dailyPrice: 124,
+     weeklyPrice: 870,
+     monthlyPrice: 3800,
+     yearlyPrice: 41500,
+     coverage: '₦7,500,000',
+     description: 'Robust protection for small to medium manufacturers',
+     features: [
+       'Factory & Equipment Coverage',
+       'Raw Materials Protection',
+       'Product Liability Insurance',
+       'Workers Compensation',
+       'Business Interruption',
+       'Environmental Liability'
+     ],
+     popular: false,
+     color: 'from-purple-500 to-purple-600',
+     businesses: ['Food Processing', 'Textile Manufacturing', 'Furniture Making', 'Metal Fabrication']
+   },
+   {
+     id: 'tech-startup',
+     name: 'Tech Innovator Plan',
+     category: 'Technology & Digital',
+     icon: Laptop,
+     dailyPrice: 96,
+     weeklyPrice: 670,
+     monthlyPrice: 2900,
+     yearlyPrice: 32000,
+     coverage: '₦6,000,000',
+     description: 'Modern coverage for tech startups and digital businesses',
+     features: [
+       'Cyber Security Insurance',
+       'Data Breach Protection',
+       'Professional Indemnity',
+       'Equipment & Software Coverage',
+       'Business Interruption',
+       'Client Data Protection'
+     ],
+     popular: false,
+     color: 'from-indigo-500 to-indigo-600',
+     businesses: ['Software Companies', 'Digital Agencies', 'E-commerce', 'Fintech Startups']
+   },
+   {
+     id: 'hospitality-standard',
+     name: 'Hospitality Haven',
+     category: 'Food & Hospitality',
+     icon: Coffee,
+     dailyPrice: 82,
+     weeklyPrice: 575,
+     monthlyPrice: 2500,
+     yearlyPrice: 27500,
+     coverage: '₦3,500,000',
+     description: 'Specialized protection for restaurants and hospitality',
+     features: [
+       'Food Safety Liability',
+       'Kitchen Equipment Coverage',
+       'Customer Injury Protection',
+       'Liquor Liability (if applicable)',
+       'Property Damage Coverage',
+       'Staff Accident Insurance'
+     ],
+     popular: false,
+     color: 'from-amber-500 to-amber-600',
+     businesses: ['Restaurants', 'Cafes', 'Hotels', 'Catering Services']
+   },
+   {
+     id: 'professional-services',
+     name: 'Professional Shield',
+     category: 'Professional Services',
+     icon: Briefcase,
+     dailyPrice: 68,
+     weeklyPrice: 475,
+     monthlyPrice: 2050,
+     yearlyPrice: 22500,
+     coverage: '₦4,500,000',
+     description: 'Tailored coverage for service-based businesses',
+     features: [
+       'Professional Indemnity',
+       'Public Liability Insurance',
+       'Office Contents Coverage',
+       'Cyber Liability Protection',
+       'Client Data Security',
+       'Legal Expense Coverage'
+     ],
+     popular: false,
+     color: 'from-teal-500 to-teal-600',
+     businesses: ['Consulting Firms', 'Accounting', 'Legal Services', 'Marketing Agencies']
+   },
+   {
+     id: 'creative-business',
+     name: 'Creative Enterprise',
+     category: 'Creative & Media',
+     icon: Camera,
+     dailyPrice: 75,
+     weeklyPrice: 525,
+     monthlyPrice: 2300,
+     yearlyPrice: 25000,
+     coverage: '₦3,000,000',
+     description: 'Comprehensive coverage for creative professionals',
+     features: [
+       'Equipment & Gear Protection',
+       'Professional Indemnity',
+       'Public Liability Coverage',
+       'Copyright Infringement Protection',
+       'Client Project Insurance',
+       'Studio/Workshop Coverage'
+     ],
+     popular: false,
+     color: 'from-pink-500 to-pink-600',
+     businesses: ['Photography Studios', 'Design Agencies', 'Media Production', 'Art Studios']
+   }
+ ];
 
-  // Auto-populate dates
-  useEffect(() => {
-    const today = new Date();
-    const nextMonth = new Date(today);
-    nextMonth.setMonth(today.getMonth() + 1);
-    const formatDate = (date) => {
-      return date.toISOString().split('T')[0];
-    };
-    setFormData(prev => ({
-      ...prev,
-      startDate: formatDate(today),
-      endDate: formatDate(nextMonth)
-    }));
-  }, []);
+ const [selectedBilling, setSelectedBilling] = useState('monthly');
+ 
+ const billingOptions = [
+   { id: 'daily', label: 'Daily', suffix: '/day', popular: false },
+   { id: 'weekly', label: 'Weekly', suffix: '/week', popular: false },
+   { id: 'monthly', label: 'Monthly', suffix: '/month', popular: true },
+   { id: 'yearly', label: 'Yearly', suffix: '/year', popular: false, discount: '15% OFF' }
+ ];
 
-  const plans = [
-    {
-      id: 'basic',
-      name: 'Basic Protection',
-      price: '350',
-      description: 'Essential coverage for small businesses',
-      features: ['Fire & Theft Protection', 'Basic Health Coverage', 'WhatsApp Support', '24/7 Claims Processing'],
-      color: 'from-blue-500 to-blue-600',
-      popular: false,
-      coverage: '₦2,500,000'
-    },
-    {
-      id: 'professional',
-      name: 'Professional Shield',
-      price: '500',
-      description: 'Comprehensive protection for growing SMEs',
-      features: ['All Basic Features', 'Equipment Coverage', 'Business Interruption', 'Priority Support', 'AI Risk Analysis'],
-      color: 'from-[#FF7043] to-orange-500',
-      popular: true,
-      coverage: '₦5,000,000'
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise Guard',
-      price: '750',
-      description: 'Complete protection suite for established businesses',
-      features: ['All Professional Features', 'Cyber Security Insurance', 'Director\'s Liability', 'Dedicated Account Manager', 'Custom Policies'],
-      color: 'from-purple-500 to-purple-600',
-      popular: false,
-      coverage: '₦10,000,000'
-    }
-  ];
+ const getCurrentPrice = (pkg) => {
+   switch(selectedBilling) {
+     case 'daily': return pkg.dailyPrice;
+     case 'weekly': return pkg.weeklyPrice;
+     case 'monthly': return pkg.monthlyPrice;
+     case 'yearly': return pkg.yearlyPrice;
+     default: return pkg.monthlyPrice;
+   }
+ };
 
-  const benefits = [
-    { icon: Shield, title: 'Instant Coverage', desc: 'Protection starts immediately after payment confirmation' },
-    { icon: Zap, title: 'AI-Powered Claims', desc: 'Claims processed in under 24 hours via WhatsApp' },
-    { icon: Award, title: 'Trusted by 50K+ SMEs', desc: 'Join Nigeria\'s leading business protection platform' },
-    { icon: Users, title: 'Expert Support', desc: '24/7 multilingual customer support team' }
-  ];
+ const getSelectedPackage = () => {
+   return insurancePackages.find(pkg => pkg.id === selectedPackage) || insurancePackages[1];
+ };
 
-  const testimonials = [
-    {
-      name: 'Adebayo Ogundimu',
-      business: 'Ogundimu Electronics',
-      location: 'Lagos',
-      rating: 5,
-      text: 'InsureLink saved my business when fire damaged my shop. Claims were processed in 18 hours!',
-      avatar: 'AO'
-    },
-    {
-      name: 'Fatima Abdullahi',
-      business: 'Fatima\'s Fashion House',
-      location: 'Kano',
-      rating: 5,
-      text: 'The AI recommendations helped me save ₦200K annually while getting better coverage.',
-      avatar: 'FA'
-    }
-  ];
+ const handleProceedToCheckout = () => {
+   setProcessingPayment(true);
+   setShowSecurityLoader(true);
+   
+   // Simulate security processing with longer duration for user to read
+   setTimeout(() => {
+     setShowSecurityLoader(false);
+     setProcessingPayment(false);
+     // Redirect to Paystack
+     window.open('https://paystack.shop/pay/insurelink', '_blank');
+   }, 4000); // Increased to 8 seconds for better readability
+ };
 
-  const getCurrentPlan = () => {
-    return plans.find(p => p.id === selectedPlan) || plans[1];
-  };
+ // Enhanced Security Processing Modal with personalization
+ const SecurityProcessingModal = () => {
+   const selectedPkg = getSelectedPackage();
+   const currentPrice = getCurrentPrice(selectedPkg);
+   const billingLabel = billingOptions.find(b => b.id === selectedBilling)?.label || 'Monthly';
+   
+   return (
+     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+       <div className="bg-white rounded-3xl p-6 max-w-lg w-full text-center shadow-2xl my-8 max-h-[90vh] overflow-y-auto">
+         {/* Animated Security Shield */}
+         <div className="relative mb-6">
+           <div className="w-20 h-20 mx-auto relative">
+             <img
+               src={InsureLinkLogo}
+               alt="InsureLink"
+               className="w-full h-full object-contain"
+             />
+             {/* Animated Security Ring */}
+             <div className="absolute inset-0 border-4 border-[#FF7043] border-t-transparent rounded-full animate-spin"></div>
+             <div className="absolute inset-2 border-2 border-[#FF7043]/30 border-b-transparent rounded-full animate-spin animation-delay-300"></div>
+           </div>
+           {/* Pulse Effect */}
+           <div className="absolute inset-0 w-20 h-20 mx-auto bg-[#FF7043]/20 rounded-full animate-ping"></div>
+         </div>
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+         <h3 className="text-xl font-bold text-slate-900 mb-2">Securing Your Transaction</h3>
+         <p className="text-[#FF7043] font-semibold text-lg mb-1">Hello, {userName}!</p>
+         <p className="text-slate-600 mb-4 text-sm">Encrypting your data and preparing secure checkout...</p>
+         
+         {/* Personalized Insurance Summary */}
+         <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 mb-4 text-left">
+           <h4 className="font-bold text-slate-900 mb-2 text-center text-sm">Your Selected Plan</h4>
+           <div className="space-y-1.5 text-sm">
+             <div className="flex justify-between items-center">
+               <span className="text-slate-600 font-medium">Plan:</span>
+               <span className="font-bold text-[#FF7043]">{selectedPkg.name}</span>
+             </div>
+             <div className="flex justify-between items-center">
+               <span className="text-slate-600 font-medium">Coverage:</span>
+               <span className="font-bold text-green-600">{selectedPkg.coverage}</span>
+             </div>
+             <div className="flex justify-between items-center">
+               <span className="text-slate-600 font-medium">Billing:</span>
+               <span className="font-bold text-slate-900">{billingLabel}</span>
+             </div>
+             <div className="flex justify-between items-center border-t pt-2 mt-2">
+               <span className="text-slate-600 font-medium">Total Amount:</span>
+               <span className="font-bold text-lg text-[#FF7043]">₦{currentPrice.toLocaleString()}</span>
+             </div>
+           </div>
+         </div>
+         
+         <div className="space-y-2 text-left mb-4 text-sm">
+           <div className="flex items-center text-green-600">
+             <CheckCircle className="w-4 h-4 mr-3" />
+             <span>SSL encryption activated</span>
+           </div>
+           <div className="flex items-center text-green-600">
+             <CheckCircle className="w-4 h-4 mr-3" />
+             <span>Payment gateway secured</span>
+           </div>
+           <div className="flex items-center text-green-600">
+             <CheckCircle className="w-4 h-4 mr-3" />
+             <span>Policy details verified</span>
+           </div>
+           <div className="flex items-center text-[#FF7043] animate-pulse">
+             <RefreshCw className="w-4 h-4 mr-3 animate-spin" />
+             <span>Redirecting to secure checkout...</span>
+           </div>
+         </div>
 
-  const handlePlanSelect = (planId) => {
-    const plan = plans.find(p => p.id === planId);
-    setSelectedPlan(planId);
-    setFormData(prev => ({
-      ...prev,
-      amount: plan.price
-    }));
-  };
+         <div className="bg-orange-50 rounded-xl p-3">
+           <div className="flex items-center justify-center gap-2 text-[#FF7043]">
+             <Lock className="w-4 h-4" />
+             <span className="font-semibold text-sm">Bank-grade Security</span>
+           </div>
+           <p className="text-xs text-slate-600 mt-1">
+             You will be redirected to Paystack in a few seconds...
+           </p>
+         </div>
+       </div>
+     </div>
+   );
+ };
 
-  const handleSaveNewPaymentMethod = () => {
-    let newMethod = null;
-    let methodType = formData.paymentMethod;
+ return (
+   <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+     {/* Navigation */}
+     <nav className="bg-white/95 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-40">
+       <div className="max-w-7xl mx-auto px-6 lg:px-8">
+         <div className="flex items-center justify-between h-20">
+           <div className="flex items-center space-x-4">
+             <button className="p-2 text-slate-500 hover:text-[#FF7043] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer">
+               <ArrowLeft className="w-6 h-6" />
+             </button>
+             <div className="flex items-center space-x-3">
+               <img src={InsureLinkLogo} alt="InsureLink" className="w-12 h-12 object-contain" />
+               <div>
+                 <h1 className="text-2xl font-bold text-slate-900">InsureLink</h1>
+                 <p className="text-sm text-slate-500 -mt-1">SME Insurance Protection</p>
+               </div>
+             </div>
+           </div>
+           <div className="flex items-center space-x-3">
+             <div className="flex items-center space-x-2 bg-green-50 text-green-700 px-4 py-2 rounded-full">
+               <Lock className="w-4 h-4" />
+               <span className="text-sm font-medium">Secure Checkout</span>
+             </div>
+           </div>
+         </div>
+       </div>
+     </nav>
 
-    if (formData.currentEditingMethodId) {
-      // Update existing method
-      setSavedPaymentMethods(prevMethods => prevMethods.map(method => {
-        if (method.id === formData.currentEditingMethodId) {
-          if (method.type === 'card') {
-            return {
-              ...method,
-              name: formData.nameOnCard || 'Credit Card',
-              accountNumber: `****${formData.cardNumber.slice(-4)}`,
-            };
-          } else if (method.type === 'bank' || method.type === 'opay' || method.type === 'moniepoint') {
-            return {
-              ...method,
-              name: formData.accountName || method.name,
-              accountNumber: `****${formData.bankAccount.slice(-4)}`,
-              bankName: formData.bankName || method.bankName,
-            };
-          }
-        }
-        return method;
-      }));
-      setFormData(prev => ({ ...prev, currentEditingMethodId: null, newMethodType: null })); // Clear editing state
-      return;
-    }
+     <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+       {/* Header */}
+       <div className="text-center mb-12">
+         <h1 className="text-5xl font-bold text-slate-900 mb-4">
+           You've Built Something <span className="text-[#FF7043]">Worth Protecting</span>
+         </h1>
+         <p className="text-xl text-slate-600 mb-6">
+           And we understand exactly what that means to you. Find your perfect fit
+         </p>
+         <div className="flex items-center justify-center gap-6 text-slate-500">
+           <div className="flex items-center gap-2">
+             <Shield className="w-5 h-5 text-[#FF7043]" />
+             <span>Instant Coverage</span>
+           </div>
+           <div className="flex items-center gap-2">
+             <Award className="w-5 h-5 text-[#FF7043]" />
+             <span>50K+ SMEs Protected</span>
+           </div>
+           <div className="flex items-center gap-2">
+             <Zap className="w-5 h-5 text-[#FF7043]" />
+             <span>24hr Claims Processing</span>
+           </div>
+         </div>
+       </div>
 
-    // Add new method
-    if (methodType === 'card' && formData.cardNumber && formData.nameOnCard) {
-      newMethod = {
-        id: `card-${Date.now()}`,
-        type: 'card',
-        name: formData.nameOnCard,
-        accountNumber: `****${formData.cardNumber.slice(-4)}`,
-        isDefault: false,
-        logo: null
-      };
-    } else if (methodType === 'transfer' && formData.bankAccount && formData.accountName && formData.bankName) {
-      newMethod = {
-        id: `bank-${Date.now()}`,
-        type: 'bank',
-        name: formData.accountName,
-        accountNumber: `****${formData.bankAccount.slice(-4)}`,
-        bankName: formData.bankName,
-        isDefault: false,
-        logo: null
-      };
-    } else if (methodType === 'opay' && formData.bankAccount && formData.accountName) {
-      newMethod = {
-        id: `opay-${Date.now()}`,
-        type: 'opay',
-        name: formData.accountName,
-        accountNumber: `****${formData.bankAccount.slice(-4)}`,
-        isDefault: false,
-        logo: OpayLogo
-      };
-    } else if (methodType === 'moniepoint' && formData.bankAccount && formData.accountName) {
-      newMethod = {
-        id: `moniepoint-${Date.now()}`,
-        type: 'moniepoint',
-        name: formData.accountName,
-        accountNumber: `****${formData.bankAccount.slice(-4)}`,
-        isDefault: false,
-        logo: MoniepointLogo
-      };
-    }
+       {/* Billing Toggle */}
+       <div className="flex justify-center mb-12">
+         <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-lg">
+           <div className="grid grid-cols-4 gap-1">
+             {billingOptions.map((option) => (
+               <button
+                 key={option.id}
+                 onClick={() => setSelectedBilling(option.id)}
+                 className={`px-6 py-3 rounded-xl font-semibold text-base transition-all relative cursor-pointer ${
+                   selectedBilling === option.id
+                     ? 'bg-[#FF7043] text-white shadow-md'
+                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                 }`}
+               >
+                 {option.label}
+                 {option.discount && (
+                   <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                     {option.discount}
+                   </span>
+                 )}
+                 {option.popular && selectedBilling !== option.id && (
+                   <span className="absolute -top-2 -right-2 bg-[#FF7043] text-white text-xs px-2 py-1 rounded-full font-bold">
+                     Popular
+                   </span>
+                 )}
+               </button>
+             ))}
+           </div>
+         </div>
+       </div>
 
-    if (newMethod) {
-      setSavedPaymentMethods(prev => [...prev, newMethod]);
-      setFormData(prev => ({
-        ...prev,
-        paymentMethod: newMethod.id, // Select the newly added method
-        newMethodType: null, // Hide the new method form
-        cardNumber: '',
-        expiryDate: '',
-        cvv: '',
-        nameOnCard: '',
-        bankAccount: '',
-        accountName: '',
-        bankName: '',
-        ussdCode: '',
-        saveMethod: false,
-      }));
-    }
-  };
+       {/* Insurance Packages Grid */}
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+         {insurancePackages.map((pkg) => {
+           const Icon = pkg.icon;
+           const isSelected = selectedPackage === pkg.id;
+           const currentPrice = getCurrentPrice(pkg);
+           const billingLabel = billingOptions.find(b => b.id === selectedBilling)?.suffix || '/month';
+           
+           return (
+             <div
+               key={pkg.id}
+               className={`relative bg-white rounded-2xl border-2 p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group ${
+                 isSelected
+                   ? 'border-[#FF7043] ring-4 ring-[#FF7043]/20 transform scale-105'
+                   : 'border-slate-200 hover:border-[#FF7043]/50'
+               }`}
+               onClick={() => setSelectedPackage(pkg.id)}
+             >
+               {pkg.popular && (
+                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                   <div className="bg-gradient-to-r from-[#FF7043] to-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                     <div className="flex items-center gap-1">
+                       <Crown className="w-3 h-3" /> Popular
+                     </div>
+                   </div>
+                 </div>
+               )}
 
+               <div className="text-center mb-4">
+                 <div className={`w-16 h-16 mx-auto mb-4 bg-gradient-to-r ${pkg.color} rounded-2xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
+                   <Icon className="w-8 h-8 text-white" />
+                 </div>
+                 <h3 className="text-xl font-bold text-slate-900 mb-2">{pkg.name}</h3>
+                 <p className="text-slate-600 text-sm mb-3">{pkg.description}</p>
+                 
+                 <div className="flex items-center justify-center gap-1 mb-2">
+                   <span className="text-3xl font-bold text-[#FF7043]">₦{currentPrice.toLocaleString()}</span>
+                   <span className="text-slate-500">{billingLabel}</span>
+                 </div>
+                 <p className="text-sm text-slate-500">Coverage up to {pkg.coverage}</p>
+               </div>
 
-  const handleSubscribe = async () => {
-    setSubscriptionStep('processing');
-    setProcessing(true);
-    // Simulate processing time with realistic steps
-    setTimeout(() => {
-      setProcessing(false);
-      setSubscriptionStep('success');
-    }, 4000);
-  };
+               <div className="space-y-2 mb-4">
+                 {pkg.features.slice(0, 3).map((feature, index) => (
+                   <div key={index} className="flex items-center gap-2 text-sm">
+                     <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                     <span className="text-slate-600">{feature}</span>
+                   </div>
+                 ))}
+                 {pkg.features.length > 3 && (
+                   <p className="text-sm text-[#FF7043] font-medium">+{pkg.features.length - 3} more features</p>
+                 )}
+               </div>
 
-  const handleDownloadPolicy = () => {
-    setDownloadingPolicy(true);
-    // Simulate download process and create a dummy PDF
-    setTimeout(() => {
-      const dummyPdfContent = `
-        Policy Document for ${userDetails.businessName}
-        Policy Number: ${policyNumberRef.current}
-        Plan: ${getCurrentPlan().name}
-        Coverage: ${getCurrentPlan().coverage}
-        Premium: ₦${formData.amount}/${formData.frequency}
-        Start Date: ${formData.startDate}
-        End Date: ${formData.endDate}
+               <div className="text-xs text-slate-500 mb-4">
+                 <p className="font-medium mb-1">Perfect for:</p>
+                 <p>{pkg.businesses.join(', ')}</p>
+               </div>
 
-        This is a dummy policy document for demonstration purposes.
-        Thank you for choosing InsureLink!
-      `;
-      const blob = new Blob([dummyPdfContent], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `InsureLink_Policy_${policyNumberRef.current}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+               {isSelected && (
+                 <div className="absolute top-4 right-4">
+                   <CheckCircle className="w-6 h-6 text-[#FF7043]" />
+                 </div>
+               )}
+             </div>
+           );
+         })}
+       </div>
 
-      setDownloadingPolicy(false);
-      console.log('Policy downloaded');
-    }, 2000);
-  };
+       {/* Selected Package Details & Payment Section */}
+       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+         {/* Package Details */}
+         <div className="lg:col-span-2">
+           <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+             <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-6 border-b border-slate-200">
+               <h2 className="text-2xl font-bold text-slate-900 mb-2">Selected Package Details</h2>
+               <p className="text-slate-600">Review your chosen insurance coverage</p>
+             </div>
 
-  const PaymentMethodOption = ({ id, icon, title, subtitle, account, isSelected, onClick, onEdit, onDelete, canEdit = false }) => (
-    <div
-      className={`flex items-center justify-between p-5 border-2 rounded-xl transition-all cursor-pointer w-full ${
-        isSelected
-          ? 'border-[#FF7043] bg-orange-50 ring-2 ring-[#FF7043]/20'
-          : 'border-slate-200 hover:border-slate-300'
-      }`}
-      onClick={onClick}
-    >
-      <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-          isSelected ? 'bg-[#FF7043]/10' : 'bg-slate-100'
-        }`}>
-          {icon}
-        </div>
-        <div className="text-left">
-          <p className="font-semibold text-slate-900 text-lg">{title}</p>
-          <p className="text-slate-600 text-base">{subtitle}</p>
-          {account && (
-            <p className="text-slate-500 text-sm mt-1">{account}</p>
-          )}
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        {isSelected && (
-          <CheckCircle className="w-6 h-6 text-[#FF7043]" />
-        )}
-        {canEdit && (
-          <div className="flex gap-1 ml-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit && onEdit();
-              }}
-              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            >
-              <Edit3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete && onDelete();
-              }}
-              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+             <div className="p-6">
+               {(() => {
+                 const pkg = getSelectedPackage();
+                 const Icon = pkg.icon;
+                 const currentPrice = getCurrentPrice(pkg);
+                 const billingLabel = billingOptions.find(b => b.id === selectedBilling)?.suffix || '/month';
+                 
+                 return (
+                   <div>
+                     <div className="flex items-start gap-4 mb-6">
+                       <div className={`w-16 h-16 bg-gradient-to-r ${pkg.color} rounded-2xl flex items-center justify-center shadow-md`}>
+                         <Icon className="w-8 h-8 text-white" />
+                       </div>
+                       <div className="flex-1">
+                         <h3 className="text-2xl font-bold text-slate-900 mb-1">{pkg.name}</h3>
+                         <p className="text-slate-600 mb-2">{pkg.description}</p>
+                         <div className="flex items-center gap-4">
+                           <span className="text-2xl font-bold text-[#FF7043]">₦{currentPrice.toLocaleString()}{billingLabel}</span>
+                           <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                             Coverage: {pkg.coverage}
+                           </span>
+                         </div>
+                       </div>
+                     </div>
 
-  const handleEditSavedMethod = (method) => {
-    setFormData(prev => ({
-      ...prev,
-      paymentMethod: method.id, // Set the selected method to the one being edited
-      currentEditingMethodId: method.id,
-      newMethodType: method.type, // Show the relevant form
-      cardNumber: method.type === 'card' ? method.accountNumber.replace('****', '') : '',
-      expiryDate: method.type === 'card' ? 'MM/YY' : '', // Placeholder, as expiry isn't saved
-      cvv: '', // CVV is never saved
-      nameOnCard: method.type === 'card' ? method.name : '',
-      bankAccount: (method.type === 'bank' || method.type === 'opay' || method.type === 'moniepoint') ? method.accountNumber.replace('****', '') : '',
-      accountName: (method.type === 'bank' || method.type === 'opay' || method.type === 'moniepoint') ? method.name : '',
-      bankName: method.type === 'bank' ? method.bankName : '',
-      ussdCode: '',
-      saveMethod: false, // Don't auto-check save when editing
-      editingAccount: true, // Force edit mode for OPay/Moniepoint/Bank
-    }));
-  };
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                       <div>
+                         <h4 className="font-semibold text-slate-900 mb-3">What's Covered</h4>
+                         <div className="space-y-2">
+                           {pkg.features.map((feature, index) => (
+                             <div key={index} className="flex items-center gap-2">
+                               <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                               <span className="text-slate-700">{feature}</span>
+                             </div>
+                           ))}
+                         </div>
+                       </div>
+                       <div>
+                         <h4 className="font-semibold text-slate-900 mb-3">Perfect For</h4>
+                         <div className="space-y-2">
+                           {pkg.businesses.map((business, index) => (
+                             <div key={index} className="flex items-center gap-2">
+                               <Target className="w-4 h-4 text-[#FF7043] flex-shrink-0" />
+                               <span className="text-slate-700">{business}</span>
+                             </div>
+                           ))}
+                         </div>
+                       </div>
+                     </div>
 
-  const handleSelectNewPaymentMethodType = (type) => {
-    setFormData(prev => ({
-      ...prev,
-      paymentMethod: type, // Select the new type for the radio
-      newMethodType: type, // Show the form for this type
-      currentEditingMethodId: null, // Clear any editing state
-      cardNumber: '',
-      expiryDate: '',
-      cvv: '',
-      nameOnCard: '',
-      bankAccount: '',
-      accountName: '',
-      bankName: '',
-      ussdCode: '',
-      saveMethod: false,
-      editingAccount: false, // Reset editing account for new selection
-    }));
-  };
+                     {/* Demo Payment Methods */}
+                     <div className="bg-slate-50 rounded-xl p-6">
+                       <h4 className="font-semibold text-slate-900 mb-4">Preferred Payment Methods</h4>
+                       <p className="text-sm text-slate-600 mb-4">Select your preferred payment method for instant checkout</p>
+                       
+                       <div className="space-y-3">
+                         <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-[#FF7043]/50 transition-colors">
+                           <div className="flex items-center gap-3">
+                             <img src={OpayLogo} alt="OPay" className="object-contain rounded-lg"style={{ width: '48px', height: '48px' }}/>
+                             <div>
+                               <p className="font-medium text-slate-900">{userName} OPay</p>
+                               <p className="text-sm text-slate-600">****5673 • Primary Account</p>
+                             </div>
+                           </div>
+                           <div className="flex items-center gap-2">
+                             <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">Default</span>
+                             <CheckCircle className="w-5 h-5 text-[#FF7043]" />
+                           </div>
+                         </div>
 
+                         <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-slate-200 opacity-75 cursor-pointer hover:opacity-100 hover:border-[#FF7043]/50 transition-all">
+                           <div className="flex items-center gap-3">
+                             <img src={MoniepointLogo} alt="Moniepoint" className="object-contain rounded-lg"style={{ width: '80px', height: '50px' }} />
+                             <div>
+                               <p className="font-medium text-slate-900">Business Account</p>
+                               <p className="text-sm text-slate-600">****8942 • Backup</p>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 );
+               })()}
+             </div>
+           </div>
+         </div>
 
-  if (subscriptionStep === 'processing') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-2xl p-8 text-center">
-          <div className="relative mb-8">
-            <div className="w-24 h-24 mx-auto flex items-center justify-center animate-pulse">
-              <img
-                src={InsureLinkLogo}
-                alt="InsureLink"
-                className="w-full h-full object-contain" // Significantly larger
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-              <div className="w-20 h-20 bg-white rounded-full hidden items-center justify-center">
-                <span className="text-[#FF7043] font-bold text-sm">IL</span>
-              </div>
-            </div>
-            <div className="absolute inset-0 w-24 h-24 mx-auto border-4 border-[#FF7043] border-t-transparent rounded-full animate-spin"></div>
-          </div>
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">Securing Your Business</h2>
-          <p className="text-slate-600 mb-6 text-lg">Processing your payment and activating your protection...</p>
-          <p className="text-slate-500 mb-8 text-base">This usually takes 30-60 seconds. Please don't close this window.</p>
-          <div className="space-y-4 text-left">
-            <div className="flex items-center text-green-600">
-              <CheckCircle className="w-6 h-6 mr-3" />
-              <span className="text-lg">Payment verified successfully</span>
-            </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircle className="w-6 h-6 mr-3" />
-              <span className="text-lg">Policy documents generated</span>
-            </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircle className="w-6 h-6 mr-3" />
-              <span className="text-lg">Risk assessment completed</span>
-            </div>
-            <div className="flex items-center text-orange-500 animate-pulse">
-              <RefreshCw className="w-6 h-6 mr-3 animate-spin" />
-              <span className="text-lg">Activating your coverage...</span>
-            </div>
-          </div>
-          <div className="mt-8 p-4 bg-blue-50 rounded-xl">
-            <p className="text-blue-800 text-base">
-              <strong>Next:</strong> You'll receive a welcome email with your policy details and a WhatsApp message to join our support community.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+         {/* Checkout Summary */}
+         <div>
+           <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden sticky top-28">
+             <div className="bg-gradient-to-r from-[#FF7043] to-orange-500 p-6 text-white">
+               <h2 className="text-2xl font-bold mb-2">Checkout Summary</h2>
+               <p className="text-orange-100">Secure payment powered by Paystack</p>
+             </div>
 
-  if (subscriptionStep === 'success') {
-    const currentPlan = getCurrentPlan();
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 p-4">
-        <div className="max-w-4xl mx-auto py-8">
-          {/* Success Header */}
-          <div className="text-center mb-12">
-            <div className="relative mb-8">
-              <div className="w-28 h-28 mx-auto bg-gradient-to-r from-emerald-500 to-green-500 rounded-full flex items-center justify-center shadow-2xl">
-                <CheckCircle className="w-14 h-14 text-white" />
-              </div>
-              <div className="absolute inset-0 w-28 h-28 mx-auto bg-emerald-200 rounded-full animate-ping opacity-20"></div>
-            </div>
-            <h1 className="text-5xl font-bold text-slate-900 mb-4">  🎉  Welcome to InsureLink!</h1>
-            <p className="text-2xl text-slate-600 mb-3">Hi {userDetails.name}, your business is now fully protected</p>
-            <p className="text-slate-500 text-xl">Policy activated instantly • Coverage effective immediately</p>
-            <div className="mt-6 inline-flex items-center gap-2 bg-green-100 text-green-800 px-6 py-3 rounded-full text-lg font-medium">
-              <Shield className="w-5 h-5" />
-              Protection Status: ACTIVE
-            </div>
-          </div>
-          {/* Success Details */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-            {/* Policy Summary */}
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-8 shadow-lg">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 rounded-xl"> {/* Removed orange background */}
-                  <img
-                    src={InsureLinkLogo}
-                    alt="InsureLink"
-                    className="w-10 h-10 object-contain"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
-                  />
-                  <div className="w-10 h-10 bg-white rounded-lg hidden items-center justify-center">
-                    <span className="text-[#FF7043] font-bold text-xs">IL</span>
-                  </div>
-                </div>
-                <div>
-                  <h2 className="text-3xl font-bold text-slate-900">Policy Activated</h2>
-                  <p className="text-slate-600 text-xl">Your {currentPlan.name} is now live and active</p>
-                </div>
-              </div>
-              <div className="bg-slate-50 rounded-xl p-6 mb-6">
-                <h3 className="text-xl font-semibold text-slate-900 mb-4">Policy Holder Details</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-slate-600 text-sm">Name</p>
-                    <p className="font-semibold text-slate-900">{userDetails.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-600 text-sm">Business</p>
-                    <p className="font-semibold text-slate-900">{userDetails.businessName}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-600 text-sm">Email</p>
-                    <p className="font-semibold text-slate-900">{userDetails.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-slate-600 text-sm">Phone</p>
-                    <p className="font-semibold text-slate-900">{userDetails.phone}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="bg-slate-50 rounded-xl p-5">
-                  <p className="text-slate-600 text-lg mb-2">Policy Number</p>
-                  <p className="font-bold text-slate-900 text-xl">{policyNumberRef.current}</p>
-                </div>
-                <div className="bg-slate-50 rounded-xl p-5">
-                  <p className="text-slate-600 text-lg mb-2">Coverage Amount</p>
-                  <p className="font-bold text-[#FF7043] text-xl">{currentPlan.coverage}</p>
-                </div>
-                <div className="bg-slate-50 rounded-xl p-5">
-                  <p className="text-slate-600 text-lg mb-2">Monthly Premium</p>
-                  <p className="font-bold text-slate-900 text-xl">₦{formData.amount}</p>
-                </div>
-                <div className="bg-slate-50 rounded-xl p-5">
-                  <p className="text-slate-600 text-lg mb-2">Next Payment</p>
-                  <p className="font-bold text-slate-900 text-xl">{new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
-                </div>
-              </div>
-              <button
-                onClick={handleDownloadPolicy}
-                disabled={downloadingPolicy}
-                className="w-full bg-gradient-to-r from-[#FF7043] to-orange-500 text-white py-5 rounded-xl font-bold text-xl hover:shadow-lg transition-all duration-300 cursor-pointer disabled:opacity-50"
-              >
-                <div className="flex items-center justify-center gap-3">
-                  {downloadingPolicy ? (
-                    <>
-                      <RefreshCw className="w-6 h-6 animate-spin" />
-                      Preparing Download...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-6 h-6" />
-                      Download Policy Documents
-                    </>
-                  )}
-                </div>
-              </button>
-              <p className="text-center text-slate-500 text-base mt-3">
-                Your policy certificate, terms, and coverage details will be downloaded as PDF
-              </p>
-            </div>
-            {/* Quick Actions */}
-            <div className="space-y-6">
-              <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-lg">
-                <h3 className="text-2xl font-bold text-slate-900 mb-5">Get Started</h3>
-                <div className="space-y-4">
-                  <button className="w-full flex items-center justify-between p-5 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer text-left">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-blue-100 rounded-lg">
-                        <Smartphone className="w-6 h-6 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-900 text-lg">Download App</p>
-                        <p className="text-slate-600 text-base">Manage policies on-the-go</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-6 h-6 text-slate-400" />
-                  </button>
-                  <button className="w-full flex items-center justify-between p-5 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer text-left">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-green-100 rounded-lg">
-                        <MessageCircle className="w-6 h-6 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-900 text-lg">Join WhatsApp</p>
-                        <p className="text-slate-600 text-base">Instant support & updates</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-6 h-6 text-slate-400" />
-                  </button>
-                  <button className="w-full flex items-center justify-between p-5 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer text-left">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-purple-100 rounded-lg">
-                        <Users className="w-6 h-6 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-900 text-lg">Book Consultation</p>
-                        <p className="text-slate-600 text-base">Free risk assessment</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-6 h-6 text-slate-400" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Next Steps */}
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-lg mb-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8">What Happens Next?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-10 h-10 text-blue-600" />
-                </div>
-                <h3 className="font-bold text-slate-900 mb-3 text-xl">Check Your Email</h3>
-                <p className="text-slate-600 text-lg">Policy documents and welcome guide sent to your inbox within 5 minutes</p>
-              </div>
-              <div className="text-center">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Phone className="w-10 h-10 text-green-600" />
-                </div>
-                <h3 className="font-bold text-slate-900 mb-3 text-xl">Welcome Call</h3>
-                <p className="text-slate-600 text-lg">Our team will call within 24 hours to onboard you and answer questions</p>
-              </div>
-              <div className="text-center">
-                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-10 h-10 text-purple-600" />
-                </div>
-                <h3 className="font-bold text-slate-900 mb-3 text-xl">Risk Assessment</h3>
-                <p className="text-slate-600 text-lg">Free business risk analysis scheduled within 7 days</p>
-              </div>
-            </div>
-          </div>
-          {/* CTA */}
-          <div className="text-center">
-            <button className="bg-gradient-to-r from-slate-900 to-slate-700 text-white px-10 py-5 rounded-xl font-bold text-xl hover:shadow-lg transition-all duration-300 cursor-pointer">
-              <div className="flex items-center gap-3">
-                <Shield className="w-6 h-6" />
-                Go to Dashboard
-              </div>
-            </button>
-            <p className="text-slate-500 text-lg mt-4">
-              Manage your policies, file claims, and track coverage from your dashboard
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+             <div className="p-6">
+               {(() => {
+                 const pkg = getSelectedPackage();
+                 const currentPrice = getCurrentPrice(pkg);
+                 const billingLabel = billingOptions.find(b => b.id === selectedBilling)?.label || 'Monthly';
+                 
+                 return (
+                   <div>
+                     <div className="space-y-4 mb-6">
+                       <div className="flex justify-between items-center">
+                         <span className="text-slate-600">Package</span>
+                         <span className="font-semibold text-slate-900">{pkg.name}</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                         <span className="text-slate-600">Billing</span>
+                         <span className="font-semibold text-slate-900">{billingLabel}</span>
+                       </div>
+                       <div className="flex justify-between items-center">
+                         <span className="text-slate-600">Coverage</span>
+                         <span className="font-semibold text-slate-900">{pkg.coverage}</span>
+                       </div>
+                       <div className="border-t border-slate-200 pt-4">
+                         <div className="flex justify-between items-center">
+                           <span className="text-lg font-bold text-slate-900">Total Amount</span>
+                           <span className="text-2xl font-bold text-[#FF7043]">₦{currentPrice.toLocaleString()}</span>
+                         </div>
+                       </div>
+                     </div>
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-xl border-b border-slate-200/60 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20"> {/* Increased height */}
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-slate-500 hover:text-[#FF7043] hover:bg-slate-100 rounded-lg transition-colors cursor-pointer">
-                <ArrowLeft className="w-6 h-6" />
-              </button>
-              <div className="flex items-center space-x-3">
-                {/* Removed orange container, increased logo size */}
-                <img
-                  src={InsureLinkLogo}
-                  alt="InsureLink"
-                  className="w-16 h-16 object-contain" // Significantly larger
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                <div className="w-16 h-16 bg-white rounded-lg hidden items-center justify-center">
-                  <span className="text-[#FF7043] font-bold text-xl">IL</span> {/* Adjusted text size for larger placeholder */}
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-slate-900">InsureLink</h1>
-                  <p className="text-sm text-slate-500 -mt-1">Secure Payment</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Lock className="w-5 h-5 text-green-600" />
-              <span className="text-base text-slate-600">256-bit SSL Encrypted</span>
-            </div>
-          </div>
-        </div>
-      </nav>
+                     <button
+                       onClick={handleProceedToCheckout}
+                       disabled={processingPayment}
+                       className="w-full bg-gradient-to-r from-[#FF7043] to-orange-500 text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
+                     >
+                       {processingPayment ? (
+                        <div className="flex items-center justify-center gap-3">
+                           <RefreshCw className="w-5 h-5 animate-spin" />
+                           Processing...
+                         </div>
+                       ) : (
+                         <div className="flex items-center justify-center gap-3">
+                           <Shield className="w-5 h-5" />
+                           Proceed to Secure Checkout
+                         </div>
+                       )}
+                     </button>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-slate-900 mb-4">
-            Choose Your <span className="text-[#FF7043]">Protection Plan</span>
-          </h1>
-          <p className="text-2xl text-slate-600 mb-3">Join 50,000+ Nigerian SMEs already protected by InsureLink</p>
-          <p className="text-slate-500 text-xl">Trusted • Transparent • Instant Coverage</p>
-        </div>
+                     <div className="mt-4 text-center">
+                       <div className="flex items-center justify-center gap-2 text-sm text-slate-500 mb-2">
+                         <Lock className="w-4 h-4" />
+                         <span>Secured by 256-bit SSL encryption</span>
+                       </div>
+                       <p className="text-xs text-slate-500">
+                         You'll be redirected to Paystack for secure payment processing
+                       </p>
+                     </div>
 
-        {/* Plans Selection */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`relative bg-white rounded-2xl border-2 p-8 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer ${
-                selectedPlan === plan.id
-                  ? 'border-[#FF7043] ring-4 ring-[#FF7043]/20 transform scale-105'
-                  : 'border-slate-200 hover:border-[#FF7043]/50'
-              }`}
-              onClick={() => handlePlanSelect(plan.id)}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-gradient-to-r from-[#FF7043] to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg">
-                    <div className="flex items-center gap-1">
-                      <Crown className="w-4 h-4" /> Most Popular
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div className="text-center mb-6">
-                <div className={`w-18 h-18 mx-auto mb-4 bg-gradient-to-r ${plan.color} rounded-2xl flex items-center justify-center shadow-lg`}>
-                  <Shield className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-3xl font-bold text-slate-900 mb-2">{plan.name}</h3>
-                <p className="text-slate-600 text-lg mb-4">{plan.description}</p>
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-5xl font-bold text-[#FF7043]">₦{plan.price}</span>
-                  <span className="text-slate-500 text-xl">/month</span>
-                </div>
-              </div>
-              <div className="space-y-3 mb-8">
-                {plan.features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3"
-                  >
-                    <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0" />
-                    <span className="text-slate-700 text-lg">{feature}</span>
-                  </div>
-                ))}
-              </div>
-              <button
-                className={`w-full py-5 rounded-xl font-bold text-xl transition-all duration-300 cursor-pointer ${
-                  selectedPlan === plan.id
-                    ? 'bg-gradient-to-r from-[#FF7043] to-orange-500 text-white shadow-lg'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {selectedPlan === plan.id ?
-                  'Selected' : 'Select Plan'}
-              </button>
-            </div>
-          ))}
-        </div>
+                     {/* Trust Indicators */}
+                     <div className="mt-6 pt-6 border-t border-slate-200">
+                       <div className="grid grid-cols-3 gap-4 text-center">
+                         <div>
+                           <Shield className="w-6 h-6 text-green-500 mx-auto mb-1" />
+                           <p className="text-xs text-slate-600">Instant Coverage</p>
+                         </div>
+                         <div>
+                           <Award className="w-6 h-6 text-blue-500 mx-auto mb-1" />
+                           <p className="text-xs text-slate-600">Licensed Insurer</p>
+                         </div>
+                         <div>
+                           <Users className="w-6 h-6 text-purple-500 mx-auto mb-1" />
+                           <p className="text-xs text-slate-600">50K+ Protected</p>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 );
+               })()}
+             </div>
+           </div>
 
-        {/* Main Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Payment Form */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
-              <div className="p-8 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Payment Details</h2>
-                <p className="text-slate-600 text-xl">Secure checkout • No hidden fees • Cancel anytime</p>
-              </div>
+           {/* Why Choose Us */}
+           <div className="mt-8 bg-white rounded-2xl border border-slate-200 shadow-lg p-6">
+             <h3 className="text-xl font-bold text-slate-900 mb-4">Why Nigerian SMEs Choose Us</h3>
+             <div className="space-y-4">
+               <div className="flex items-start gap-3">
+                 <Zap className="w-5 h-5 text-[#FF7043] mt-0.5" />
+                 <div>
+                   <p className="font-semibold text-slate-900">Lightning Fast Claims</p>
+                   <p className="text-sm text-slate-600">Process claims via WhatsApp in under 24 hours</p>
+                 </div>
+               </div>
+               <div className="flex items-start gap-3">
+                 <Smartphone className="w-5 h-5 text-[#FF7043] mt-0.5" />
+                 <div>
+                   <p className="font-semibold text-slate-900">Mobile-First Experience</p>
+                   <p className="text-sm text-slate-600">Manage everything from your smartphone</p>
+                 </div>
+               </div>
+               <div className="flex items-start gap-3">
+                 <TrendingUp className="w-5 h-5 text-[#FF7043] mt-0.5" />
+                 <div>
+                   <p className="font-semibold text-slate-900">Affordable Premiums</p>
+                   <p className="text-sm text-slate-600">Plans starting from just ₦72/day</p>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
 
-              <div className="p-8">
-                {/* Subscription Details */}
-                <div className="mb-8">
-                  <h3 className="text-2xl font-semibold text-slate-900 mb-6">Subscription Settings</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                      <label className="block text-lg font-medium text-slate-700 mb-3">Premium Amount</label>
-                      <div className="relative">
-                        <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 text-xl">₦</span>
-                        <input
-                          type="text"
-                          value={formData.amount}
-                          onChange={(e) => handleInputChange('amount', e.target.value)}
-                          className="w-full pl-12 pr-4 py-5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-xl cursor-pointer"
-                          placeholder="500"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-lg font-medium text-slate-700 mb-3">Payment Frequency</label>
-                      <div className="flex bg-slate-100 rounded-xl p-1">
-                        <button
-                          type="button"
-                          onClick={() => handleInputChange('frequency', 'Weekly')}
-                          className={`flex-1 py-4 px-4 rounded-lg text-lg font-medium transition-all cursor-pointer ${
-                            formData.frequency === 'Weekly' ?
-                              'bg-[#FF7043] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-                          }`}
-                        >
-                          Weekly
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleInputChange('frequency', 'Monthly')}
-                          className={`flex-1 py-4 px-4 rounded-lg text-lg font-medium transition-all cursor-pointer ${
-                            formData.frequency === 'Monthly' ?
-                              'bg-[#FF7043] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
-                          }`}
-                        >
-                          Monthly
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-lg font-medium text-slate-700 mb-3">Start Date</label>
-                      <input
-                        type="date"
-                        value={formData.startDate}
-                        onChange={(e) => handleInputChange('startDate', e.target.value)}
-                        className="w-full px-4 py-5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-xl cursor-pointer"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-lg font-medium text-slate-700 mb-3">End Date</label>
-                      <input
-                        type="date"
-                        value={formData.endDate}
-                        onChange={(e) => handleInputChange('endDate', e.target.value)}
-                        className="w-full px-4 py-5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-xl cursor-pointer"
-                      />
-                    </div>
-                  </div>
-                </div>
+       {/* Customer Reviews */}
+       <div className="mt-16 bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl border border-orange-200 shadow-lg p-8">
+         <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">Trusted by Nigerian SMEs</h2>
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+           {[
+             {
+               name: 'Adebayo Ogundimu',
+               business: 'Electronics Shop, Lagos',
+               rating: 5,
+               text: 'InsureLink saved my business when fire damaged my shop. Claims processed in 18 hours via WhatsApp!',
+               avatar: 'AO'
+             },
+             {
+               name: 'Fatima Abdullahi',
+               business: 'Fashion Store, Kano',
+               rating: 5,
+               text: 'The coverage is comprehensive and affordable. Perfect for small businesses like mine.',
+               avatar: 'FA'
+             },
+             {
+               name: 'Chinedu Okafor',
+               business: 'Transport Service, Onitsha',
+               rating: 5,
+               text: 'Amazing support team and instant policy activation. Highly recommend for logistics businesses.',
+               avatar: 'CO'
+             }
+           ].map((review, index) => (
+             <div key={index} className="bg-white rounded-xl p-6 shadow-md">
+               <div className="flex items-center mb-4">
+                 <div className="w-12 h-12 bg-gradient-to-r from-[#FF7043] to-orange-400 rounded-full flex items-center justify-center text-white font-bold mr-3">
+                   {review.avatar}
+                 </div>
+                 <div>
+                   <p className="font-semibold text-slate-900">{review.name}</p>
+                   <p className="text-sm text-slate-600">{review.business}</p>
+                 </div>
+               </div>
+               <div className="flex items-center mb-3">
+                 {[...Array(review.rating)].map((_, i) => (
+                   <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                 ))}
+               </div>
+               <p className="text-slate-700 text-sm leading-relaxed">"{review.text}"</p>
+             </div>
+           ))}
+         </div>
+       </div>
 
-                {/* Payment Method */}
-                <div className="mb-8">
-                  <h3 className="text-2xl font-semibold text-slate-900 mb-6">Payment Method</h3>
-                  <p className="text-slate-600 text-lg mb-6">Choose your preferred payment method. Your details will be saved securely.</p>
+       {/* FAQ Section */}
+       <div className="mt-16 bg-white rounded-2xl border border-slate-200 shadow-lg p-8">
+         <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">Frequently Asked Questions</h2>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+           <div className="space-y-6">
+             <div>
+               <h3 className="font-semibold text-slate-900 text-lg mb-2">How quickly can I get coverage?</h3>
+               <p className="text-slate-600">Coverage begins immediately after payment confirmation. You'll receive your policy documents within 5 minutes.</p>
+             </div>
+             <div>
+               <h3 className="font-semibold text-slate-900 text-lg mb-2">Can I file claims via WhatsApp?</h3>
+               <p className="text-slate-600">Yes! Our AI-powered WhatsApp system processes most claims within 24 hours. Simply send us your claim details and supporting documents.</p>
+             </div>
+             <div>
+               <h3 className="font-semibold text-slate-900 text-lg mb-2">What payment methods do you accept?</h3>
+               <p className="text-slate-600">We accept all major payment methods including OPay, Moniepoint, bank transfers, and all major debit/credit cards through Paystack.</p>
+             </div>
+           </div>
+           <div className="space-y-6">
+             <div>
+               <h3 className="font-semibold text-slate-900 text-lg mb-2">Can I change my plan later?</h3>
+               <p className="text-slate-600">Absolutely! You can upgrade or downgrade your plan anytime from your dashboard. Changes take effect on your next billing cycle.</p>
+             </div>
+             <div>
+               <h3 className="font-semibold text-slate-900 text-lg mb-2">Is there a minimum contract period?</h3>
+               <p className="text-slate-600">No minimum contract! You can cancel anytime. However, we recommend at least 3 months to fully experience our comprehensive protection.</p>
+             </div>
+             <div>
+               <h3 className="font-semibold text-slate-900 text-lg mb-2">Do you cover businesses in all Nigerian states?</h3>
+               <p className="text-slate-600">Yes, we provide coverage for SMEs across all 36 states and the FCT. Our support team speaks English, Hausa, Yoruba, and Igbo.</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
 
-                  {/* Saved Payment Methods */}
-                  {savedPaymentMethods.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="text-lg font-medium text-slate-700 mb-4">Saved Payment Methods</h4>
-                      <div className="space-y-3">
-                        {savedPaymentMethods.map(method => (
-                          <PaymentMethodOption
-                            key={method.id}
-                            id={method.id}
-                            icon={
-                              method.logo ? (
-                                <img src={method.logo} alt={method.type} className="w-8 h-8 object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                              ) : (
-                                <CreditCard className="w-8 h-8 text-slate-600" />
-                              )
-                            }
-                            title={method.name}
-                            subtitle={`${method.type.charAt(0).toUpperCase() + method.type.slice(1)} • ${method.accountNumber}`}
-                            account={method.bankName && `${method.bankName}`}
-                            isSelected={formData.paymentMethod === method.id}
-                            onClick={() => {
-                              handleInputChange('paymentMethod', method.id);
-                              setFormData(prev => ({ ...prev, newMethodType: null, currentEditingMethodId: null })); // Hide new method form and clear editing
-                            }}
-                            canEdit={true}
-                            onEdit={() => handleEditSavedMethod(method)}
-                            onDelete={() => {
-                              setSavedPaymentMethods(prev => prev.filter(m => m.id !== method.id));
-                              // If deleted method was selected, reset selection
-                              if (formData.paymentMethod === method.id) {
-                                setFormData(prev => ({ ...prev, paymentMethod: 'opay' }));
-                              }
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
+     {/* Footer */}
+     <footer className="bg-slate-900 text-white py-12 mt-16">
+       <div className="max-w-7xl mx-auto px-6 lg:px-8">
+         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+           <div className="md:col-span-2">
+             <div className="flex items-center space-x-3 mb-4">
+               <img src={InsureLinkLogo} alt="InsureLink" className="w-10 h-10" />
+               <h3 className="text-2xl font-bold">InsureLink</h3>
+             </div>
+             <p className="text-slate-400 text-lg mb-6">
+               Nigeria's leading insurance platform for small and medium enterprises. 
+               Protecting your business with modern, affordable, and accessible insurance solutions.
+             </p>
+             <div className="flex space-x-4">
+               <a href="#" className="text-slate-400 hover:text-[#FF7043] transition-colors cursor-pointer">
+                 <MessageCircle className="w-6 h-6" />
+               </a>
+               <a href="#" className="text-slate-400 hover:text-[#FF7043] transition-colors cursor-pointer">
+                 <Phone className="w-6 h-6" />
+               </a>
+               <a href="#" className="text-slate-400 hover:text-[#FF7043] transition-colors cursor-pointer">
+                 <Mail className="w-6 h-6" />
+               </a>
+             </div>
+           </div>
+           <div>
+             <h3 className="text-xl font-bold mb-4">Quick Links</h3>
+             <ul className="space-y-2 text-slate-400">
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">All Insurance Plans</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">Claims Portal</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">Customer Support</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">About InsureLink</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">Contact Us</a></li>
+             </ul>
+           </div>
+           <div>
+             <h3 className="text-xl font-bold mb-4">Legal & Support</h3>
+             <ul className="space-y-2 text-slate-400">
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">Terms of Service</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">Privacy Policy</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">Insurance License</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">Help Center</a></li>
+               <li><a href="#" className="hover:text-[#FF7043] transition-colors cursor-pointer">File a Complaint</a></li>
+             </ul>
+           </div>
+         </div>
+         <div className="border-t border-slate-700 mt-8 pt-8 text-center">
+           <div className="flex flex-col md:flex-row justify-between items-center">
+             <p className="text-slate-500 mb-4 md:mb-0">
+               &copy; {new Date().getFullYear()} InsureLink Nigeria. All rights reserved. Licensed by NAICOM.
+             </p>
+             <div className="flex items-center space-x-4">
+               <div className="flex items-center space-x-2 text-green-400">
+                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                 <span className="text-sm">All Systems Operational</span>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </footer>
 
-                  {/* New Payment Methods Selection */}
-                  <div className="space-y-4 mb-6">
-                    <h4 className="text-lg font-medium text-slate-700">Add New Payment Method</h4>
-                    <PaymentMethodOption
-                      id="opay"
-                      icon={
-                        <img src={OpayLogo} alt="OPay" className="w-8 h-8 object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                      }
-                      title="OPay Account"
-                      subtitle="Connect your OPay account"
-                      isSelected={formData.paymentMethod === 'opay' && formData.newMethodType === 'opay'}
-                      onClick={() => handleSelectNewPaymentMethodType('opay')}
-                    />
-                    <PaymentMethodOption
-                      id="moniepoint"
-                      icon={
-                        <img src={MoniepointLogo} alt="Moniepoint" className="w-8 h-8 object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                      }
-                      title="Moniepoint Account"
-                      subtitle="Connect your Moniepoint account"
-                      isSelected={formData.paymentMethod === 'moniepoint' && formData.newMethodType === 'moniepoint'}
-                      onClick={() => handleSelectNewPaymentMethodType('moniepoint')}
-                    />
-                    <PaymentMethodOption
-                      id="card"
-                      icon={<CreditCard className="w-8 h-8 text-slate-600" />}
-                      title="Credit/Debit Card"
-                      subtitle="Visa, Mastercard, Verve"
-                      isSelected={formData.paymentMethod === 'card' && formData.newMethodType === 'card'}
-                      onClick={() => handleSelectNewPaymentMethodType('card')}
-                    />
-                    <PaymentMethodOption
-                      id="transfer"
-                      icon={<Building className="w-8 h-8 text-slate-600" />}
-                      title="Bank Transfer"
-                      subtitle="Direct bank payment"
-                      isSelected={formData.paymentMethod === 'transfer' && formData.newMethodType === 'transfer'}
-                      onClick={() => handleSelectNewPaymentMethodType('transfer')}
-                    />
-                    <PaymentMethodOption
-                      id="ussd"
-                      icon={<Phone className="w-8 h-8 text-slate-600" />}
-                      title="USSD Payment"
-                      subtitle="Pay using your phone's USSD code"
-                      isSelected={formData.paymentMethod === 'ussd' && formData.newMethodType === 'ussd'}
-                      onClick={() => handleSelectNewPaymentMethodType('ussd')}
-                    />
-                  </div>
-
-                  {/* Payment Details based on newMethodType selection */}
-                  {(formData.newMethodType === 'opay' || formData.newMethodType === 'moniepoint') && (
-                    <div className="bg-slate-50 rounded-xl p-6 space-y-4">
-                      <h4 className="text-xl font-semibold text-slate-900 mb-4">
-                        {formData.newMethodType === 'opay' ? 'OPay' : 'Moniepoint'} Account Details
-                      </h4>
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">Phone Number / Account ID</label>
-                        <input
-                          type="text"
-                          value={formData.bankAccount}
-                          onChange={(e) => handleInputChange('bankAccount', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="e.g., 080XXXXXXXX"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">Account Name</label>
-                        <input
-                          type="text"
-                          value={formData.accountName}
-                          onChange={(e) => handleInputChange('accountName', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="e.g., John Doe"
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="saveOpayMoniepoint"
-                          checked={formData.saveMethod}
-                          onChange={(e) => handleInputChange('saveMethod', e.target.checked)}
-                          className="w-5 h-5 text-[#FF7043] rounded-md focus:ring-[#FF7043] cursor-pointer"
-                        />
-                        <label htmlFor="saveOpayMoniepoint" className="text-slate-700 text-base">Save this account for future payments</label>
-                      </div>
-                      {formData.saveMethod && (
-                        <button
-                          type="button"
-                          onClick={handleSaveNewPaymentMethod}
-                          className="w-full mt-4 bg-green-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <Save className="w-5 h-5" /> Save Account
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {formData.newMethodType === 'card' && (
-                    <div className="bg-slate-50 rounded-xl p-6 space-y-4">
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">Card Number</label>
-                        <input
-                          type="text"
-                          value={formData.cardNumber}
-                          onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="•••• •••• •••• ••••"
-                          maxLength="19"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-lg font-medium text-slate-700 mb-2">Expiry Date (MM/YY)</label>
-                          <input
-                            type="text"
-                            value={formData.expiryDate}
-                            onChange={(e) => handleInputChange('expiryDate', e.target.value)}
-                            className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                            placeholder="MM/YY"
-                            maxLength="5"
-                          />
-                        </div>
-                        <div className="relative">
-                          <label className="block text-lg font-medium text-slate-700 mb-2">CVV</label>
-                          <input
-                            type={showCvv ?
-                              'text' : 'password'}
-                            value={formData.cvv}
-                            onChange={(e) => handleInputChange('cvv', e.target.value)}
-                            className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg pr-12"
-                            placeholder="•••"
-                            maxLength="4"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowCvv(!showCvv)}
-                            className="absolute right-4 top-1/2 mt-2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700"
-                          >
-                            {showCvv ?
-                              <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                          </button>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">Name on Card</label>
-                        <input
-                          type="text"
-                          value={formData.nameOnCard}
-                          onChange={(e) => handleInputChange('nameOnCard', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="e.g., John Doe"
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="saveCard"
-                          checked={formData.saveMethod}
-                          onChange={(e) => handleInputChange('saveMethod', e.target.checked)}
-                          className="w-5 h-5 text-[#FF7043] rounded-md focus:ring-[#FF7043] cursor-pointer"
-                        />
-                        <label htmlFor="saveCard" className="text-slate-700 text-base">Save this card for future payments</label>
-                      </div>
-                      {formData.saveMethod && (
-                        <button
-                          type="button"
-                          onClick={handleSaveNewPaymentMethod}
-                          className="w-full mt-4 bg-green-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <Save className="w-5 h-5" /> Save Card
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {formData.newMethodType === 'transfer' && (
-                    <div className="bg-slate-50 rounded-xl p-6 space-y-4">
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">Bank Name</label>
-                        <input
-                          type="text"
-                          value={formData.bankName}
-                          onChange={(e) => handleInputChange('bankName', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="e.g., Zenith Bank"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">Account Number</label>
-                        <input
-                          type="text"
-                          value={formData.bankAccount}
-                          onChange={(e) => handleInputChange('bankAccount', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="e.g., 0123456789"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">Account Name</label>
-                        <input
-                          type="text"
-                          value={formData.accountName}
-                          onChange={(e) => handleInputChange('accountName', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="e.g., John Doe"
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="saveBank"
-                          checked={formData.saveMethod}
-                          onChange={(e) => handleInputChange('saveMethod', e.target.checked)}
-                          className="w-5 h-5 text-[#FF7043] rounded-md focus:ring-[#FF7043] cursor-pointer"
-                        />
-                        <label htmlFor="saveBank" className="text-slate-700 text-base">Save this bank account for future payments</label>
-                      </div>
-                      {formData.saveMethod && (
-                        <button
-                          type="button"
-                          onClick={handleSaveNewPaymentMethod}
-                          className="w-full mt-4 bg-green-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                        >
-                          <Save className="w-5 h-5" /> Save Account
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {formData.newMethodType === 'ussd' && (
-                    <div className="bg-slate-50 rounded-xl p-6 space-y-4">
-                      <div>
-                        <label className="block text-lg font-medium text-slate-700 mb-2">USSD Code</label>
-                        <input
-                          type="text"
-                          value={formData.ussdCode}
-                          onChange={(e) => handleInputChange('ussdCode', e.target.value)}
-                          className="w-full px-4 py-4 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#FF7043] focus:border-transparent text-lg"
-                          placeholder="e.g., *901# for Access Bank"
-                        />
-                      </div>
-                      <p className="text-slate-600 text-base">
-                        After clicking subscribe, a USSD prompt will appear on your phone to complete the payment.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Order Summary */}
-          <div>
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden sticky top-28">
-              <div className="p-8 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                <h2 className="text-3xl font-bold text-slate-900 mb-2">Order Summary</h2>
-                <p className="text-slate-600 text-xl">Review your plan and total amount</p>
-              </div>
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-slate-600 text-lg">Selected Plan</p>
-                  <p className="font-semibold text-slate-900 text-lg">{getCurrentPlan().name}</p>
-                </div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-slate-600 text-lg">Premium Amount</p>
-                  <p className="font-semibold text-slate-900 text-lg">₦{formData.amount}</p>
-                </div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-slate-600 text-lg">Frequency</p>
-                  <p className="font-semibold text-slate-900 text-lg">{formData.frequency}</p>
-                </div>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-slate-600 text-lg">Coverage</p>
-                  <p className="font-semibold text-slate-900 text-lg">{getCurrentPlan().coverage}</p>
-                </div>
-                <div className="flex items-center justify-between mb-6 border-t border-slate-200 pt-6 mt-6">
-                  <p className="text-slate-800 text-2xl font-bold">Total Due Now</p>
-                  <p className="text-orange-600 text-3xl font-bold">₦{formData.amount}</p>
-                </div>
-
-                <button
-                  onClick={handleSubscribe}
-                  disabled={processing}
-                  className="w-full bg-gradient-to-r from-[#FF7043] to-orange-500 text-white py-5 rounded-xl font-bold text-xl hover:shadow-lg transition-all duration-300 cursor-pointer disabled:opacity-50"
-                >
-                  <div className="flex items-center justify-center gap-3">
-                    {processing ? (
-                      <>
-                        <RefreshCw className="w-6 h-6 animate-spin" />
-                        Subscribing...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="w-6 h-6" />
-                        Subscribe Now
-                      </>
-                    )}
-                  </div>
-                </button>
-                <p className="text-center text-slate-500 text-base mt-3">
-                  By subscribing, you agree to InsureLink's <a href="#" className="text-[#FF7043] hover:underline">Terms of Service</a> and <a href="#" className="text-[#FF7043] hover:underline">Privacy Policy</a>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Benefits Section */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">Why Choose InsureLink?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="text-center p-6 bg-slate-50 rounded-xl">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <benefit.icon className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="font-bold text-slate-900 text-xl mb-2">{benefit.title}</h3>
-                <p className="text-slate-600 text-lg">{benefit.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Testimonials Section */}
-        <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl border border-orange-200 shadow-lg p-8 mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">What Our Customers Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-md border border-slate-100">
-                <div className="flex items-center mb-4">
-                  <div className="w-14 h-14 bg-gradient-to-r from-[#FF7043] to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-xl mr-4">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900 text-lg">{testimonial.name}</p>
-                    <p className="text-slate-600 text-base">{testimonial.business}, {testimonial.location}</p>
-                  </div>
-                </div>
-                <div className="flex items-center mb-3">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-slate-700 text-lg leading-relaxed">"{testimonial.text}"</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* FAQ Section (Placeholder for future expansion) */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">Frequently Asked Questions</h2>
-          <div className="space-y-4">
-            <div className="border-b border-slate-200 pb-4">
-              <h3 className="font-semibold text-slate-900 text-xl mb-2">How do I file a claim?</h3>
-              <p className="text-slate-600 text-lg">Claims can be filed quickly through our WhatsApp support or via your dashboard. Our AI-powered system processes most claims within 24 hours.</p>
-            </div>
-            <div className="border-b border-slate-200 pb-4">
-              <h3 className="font-semibold text-slate-900 text-xl mb-2">Can I upgrade or downgrade my plan?</h3>
-              <p className="text-slate-600 text-lg">Yes, you can easily upgrade or downgrade your plan anytime from your InsureLink dashboard. Changes will take effect immediately.</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-slate-900 text-xl mb-2">Is my payment information secure?</h3>
-              <p className="text-slate-600 text-lg">Absolutely. We use 256-bit SSL encryption and comply with PCI DSS standards to ensure your payment details are fully secure.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center"> {/* Removed background colors and shadow */}
-                <img src={InsureLinkLogo} alt="InsureLink" className="w-full h-full object-contain" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
-                <div className="w-6 h-6 bg-white rounded-md hidden items-center justify-center">
-                  <span className="text-[#FF7043] font-bold text-xs">IL</span>
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold">InsureLink</h3>
-            </div>
-            <p className="text-slate-400 text-base mb-4">Your trusted partner in business protection.</p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-slate-400 hover:text-[#FF7043] transition-colors"><Mail className="w-6 h-6" /></a>
-              <a href="#" className="text-slate-400 hover:text-[#FF7043] transition-colors"><Phone className="w-6 h-6" /></a>
-              <a href="#" className="text-slate-400 hover:text-[#FF7043] transition-colors"><MessageCircle className="w-6 h-6" /></a>
-            </div>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-slate-400">
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">Home</a></li>
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">Plans</a></li>
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">Contact</a></li>
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">FAQs</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-xl font-bold mb-4">Legal</h3>
-            <ul className="space-y-2 text-slate-400">
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-[#FF7043] transition-colors">Disclaimer</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="text-center text-slate-500 mt-8 border-t border-slate-700 pt-8">
-          <p>&copy; {new Date().getFullYear()} InsureLink. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
-  );
+     {/* Security Processing Modal */}
+     {showSecurityLoader && <SecurityProcessingModal />}
+   </div>
+ );
 };
 
 export default PaymentPage;

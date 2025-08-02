@@ -5,9 +5,10 @@ import {
   Menu as MenuIcon, X, FileText, Award, Calendar, Briefcase, MessageCircle,
   Bell, User, Settings, LogOut, Search, Shield, ArrowRight, Home, Users, DollarSign, CheckCircle, ChevronDown, TrendingUp, Star, CreditCard, ChevronRight, Clock, Zap, Phone
 } from 'lucide-react';
-import InsureLinkLogo from "../../assets/InsureLink.jpg";
-import OpayLogo from "../../assets/opay.png";
-import MoniepointLogo from "../../assets/moniepoint.png";
+import InsureLinkLogo from '../../InsureLink.jpg'; // Ensure this path is correct
+import OpayLogo from '../../opay.png'; // Assuming opay.png is in src/
+import MoniepointLogo from '../../moniepoint.png'; // Assuming moniepoint.png is in src/
+import { CreditCardIcon } from 'lucide-react';
 
 // Mock Data (will be replaced by actual data fetching for user details)
 const defaultUserData = {
@@ -415,7 +416,7 @@ const Dashboard = () => {
             <span>Claims</span>
           </Link>
           <Link to="/payment-page" className="flex items-center space-x-3 p-3 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-[#FF7043] transition-colors cursor-pointer">
-            <DollarSign size={20} />
+            <CreditCardIcon size={20} />
             <span>Payments</span>
           </Link>
           {/* Updated Link to pass user state */}
