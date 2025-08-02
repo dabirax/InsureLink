@@ -388,17 +388,17 @@ const Dashboard = () => {
   const claimToDisplay = claimsData.find(claim => claim.id === "CLM-2025-005") || claimsData[0] || null; // Fallback to first claim or null
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-gray-900 font-sans">
+    <div className="flex min-h-screen font-sans text-gray-900 bg-slate-50">
       {/* Sidebar Navigation */}
       <aside ref={sidebarRef} className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 transition-transform duration-300 ease-in-out lg:translate-x-0 p-6 flex flex-col shadow-lg
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center space-x-3 mb-8 cursor-pointer">
+        <div className="flex items-center mb-8 space-x-3 cursor-pointer">
           <div className="flex-shrink-0">
-            <img className="h-10 w-auto" src={InsureLinkLogo} alt="InsureLink Logo" />
+            <img className="w-auto h-10" src={InsureLinkLogo} alt="InsureLink Logo" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">InsureLink</h1>
-            <p className="text-sm text-slate-500 -mt-1 tracking-wider">PREMIUM</p>
+            <p className="-mt-1 text-sm tracking-wider text-slate-500">PREMIUM</p>
           </div>
         </div>
         <nav className="flex-1 space-y-2">
@@ -415,7 +415,7 @@ const Dashboard = () => {
             <span>Claims</span>
           </Link>
           <Link to="/payment-page" className="flex items-center space-x-3 p-3 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-[#FF7043] transition-colors cursor-pointer">
-            <CreditCardIcon size={20} />
+            <CreditCard size={20} />
             <span>Payments</span>
           </Link>
           {/* Updated Link to pass user state */}
@@ -428,7 +428,7 @@ const Dashboard = () => {
             <span>Settings</span>
           </Link>
         </nav>
-        <div className="mt-auto pt-6 border-t border-slate-200">
+        <div className="pt-6 mt-auto border-t border-slate-200">
           <Link to="/logout" className="flex items-center space-x-3 p-3 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-[#FF7043] transition-colors cursor-pointer">
             <LogOut size={20} />
             <span>Log Out</span>
@@ -436,13 +436,13 @@ const Dashboard = () => {
         </div>
       </aside>
       {/* Main Content Area */}
-      <div className="flex-1 lg:ml-64 bg-slate-50 overflow-auto">
+      <div className="flex-1 overflow-auto lg:ml-64 bg-slate-50">
         {/* Top Header */}
-        <header className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between shadow-sm sticky top-0 z-40">
+        <header className="sticky top-0 z-40 flex items-center justify-between px-8 py-4 bg-white border-b shadow-sm border-slate-200">
           <div className="flex items-center gap-6">
             <button
               onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-md text-slate-600 hover:bg-slate-100 menu-button cursor-pointer"
+              className="p-2 rounded-md cursor-pointer lg:hidden text-slate-600 hover:bg-slate-100 menu-button"
               aria-label="Open sidebar"
             >
               <MenuIcon size={24} />
@@ -461,7 +461,7 @@ const Dashboard = () => {
                 {getPersonalizedSubtitle()}
               </p>
               {/* Breadcrumb Navigation Placeholder */}
-              <div className="text-xs text-slate-400 mt-1">Dashboard</div>
+              <div className="mt-1 text-xs text-slate-400">Dashboard</div>
             </div>
           </div>
           {/* Right side of header (Search, Notifications, User Profile) */}
@@ -473,7 +473,7 @@ const Dashboard = () => {
                 placeholder="Search..."
                 className="pl-10 pr-4 py-2 rounded-lg border border-slate-300 focus:border-[#FF7043] focus:ring-1 focus:ring-[#FF7043] outline-none transition-all"
               />
-              <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Search size={18} className="absolute text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
             </div>
             {/* Notifications Dropdown */}
             <div className="relative">
@@ -484,7 +484,7 @@ const Dashboard = () => {
               >
                 <Bell size={24} />
                 {notifications.filter(n => !n.read).length > 0 && (
-                  <span className="absolute top-1 right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></span>
+                  <span className="absolute w-3 h-3 bg-red-500 border-2 border-white rounded-full top-1 right-1"></span>
                 )}
               </button>
               <Transition
@@ -497,11 +497,11 @@ const Dashboard = () => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <div ref={notificationsRef} className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
-                  <div className="py-4 px-5 border-b border-slate-200">
+                <div ref={notificationsRef} className="absolute right-0 z-50 mt-3 overflow-hidden bg-white shadow-lg w-80 rounded-xl ring-1 ring-black ring-opacity-5">
+                  <div className="px-5 py-4 border-b border-slate-200">
                     <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
                   </div>
-                  <div className="max-h-80 overflow-y-auto">
+                  <div className="overflow-y-auto max-h-80">
                     {notifications.length > 0 ? (
                       notifications.map(notification => (
                         <div key={notification.id} className={`p-4 flex items-start space-x-3 border-b border-slate-100 ${!notification.read ? 'bg-orange-50' : 'hover:bg-slate-50'} cursor-pointer`}>
@@ -512,15 +512,15 @@ const Dashboard = () => {
                             <p className={`text-sm ${!notification.read ? 'font-medium text-slate-900' : 'text-slate-600'}`}>
                               <span className="font-semibold">{notification.message.split(' - ')[0]}</span>{notification.message.includes(' - ') ? ` - ${notification.message.split(' - ')[1]}` : ''}
                             </p>
-                            <p className="text-xs text-slate-400 mt-1">{notification.time}</p>
+                            <p className="mt-1 text-xs text-slate-400">{notification.time}</p>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <p className="p-4 text-sm text-slate-500 text-center">No new notifications.</p>
+                      <p className="p-4 text-sm text-center text-slate-500">No new notifications.</p>
                     )}
                   </div>
-                  <div className="p-3 border-t border-slate-200 text-center">
+                  <div className="p-3 text-center border-t border-slate-200">
                     <Link to="/notifications" className="text-[#FF7043] text-sm font-medium hover:underline cursor-pointer">
                       View All Notifications
                     </Link>
@@ -534,11 +534,11 @@ const Dashboard = () => {
                 <Menu.Button className="flex items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF7043] focus:ring-offset-2 cursor-pointer pr-2">
                   <span className="sr-only">Open user menu</span>
                   <img
-                    className="h-10 w-10 rounded-full object-cover mr-2"
+                    className="object-cover w-10 h-10 mr-2 rounded-full"
                     src={user.avatar || `https://placehold.co/40x40/FF7043/FFFFFF?text=${(user.preferredName || user.firstName || 'U').charAt(0)}`}
                     alt="User Avatar"
                   />
-                  <div className="hidden md:block text-left mr-1">
+                  <div className="hidden mr-1 text-left md:block">
                     <p className="text-sm font-medium text-gray-900">{user.preferredName || user.firstName || 'User'}</p>
                     <p className="text-xs text-slate-500 -mt-0.5">{user.email || 'user@example.com'}</p>
                   </div>
@@ -554,7 +554,7 @@ const Dashboard = () => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <Menu.Items className="absolute right-0 z-10 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <Menu.Item>
                     {({ active }) => (
                       <div className="block px-4 py-2 text-sm text-gray-700">
@@ -563,7 +563,7 @@ const Dashboard = () => {
                       </div>
                     )}
                   </Menu.Item>
-                  <div className="border-t border-gray-100 my-1"></div>
+                  <div className="my-1 border-t border-gray-100"></div>
                   <Menu.Item>
                     {({ active }) => (
                       <Link
@@ -587,7 +587,7 @@ const Dashboard = () => {
                       </Link>
                     )}
                   </Menu.Item>
-                  <div className="border-t border-gray-100 my-1"></div>
+                  <div className="my-1 border-t border-gray-100"></div>
                   <Menu.Item>
                     {({ active }) => (
                       <Link
@@ -606,80 +606,80 @@ const Dashboard = () => {
         </header>
         <main className="p-8">
           {/* Key Metrics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl p-6 shadow-md border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer">
+          <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="p-6 transition-shadow bg-white border shadow-md cursor-pointer rounded-xl border-slate-200 hover:shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-orange-100 rounded-full flex items-center justify-center">
+                <div className="flex items-center justify-center p-3 bg-orange-100 rounded-full">
                   <FileText size={20} className="text-[#FF7043]" />
                 </div>
-                <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                <span className="px-3 py-1 text-xs font-medium rounded-full text-slate-600 bg-slate-100">
                   Total
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">{dashboardSummary.activePolicies}</h3>
+              <h3 className="mb-1 text-2xl font-bold text-gray-900">{dashboardSummary.activePolicies}</h3>
               <p className="text-base text-slate-600">Active Policies</p>
-              <p className="text-sm text-green-600 flex items-center mt-1">
+              <p className="flex items-center mt-1 text-sm text-green-600">
                 <TrendingUp size={14} className="mr-1" /> 18% above average!
               </p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-md border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer">
+            <div className="p-6 transition-shadow bg-white border shadow-md cursor-pointer rounded-xl border-slate-200 hover:shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-orange-100 rounded-full flex items-center justify-center">
+                <div className="flex items-center justify-center p-3 bg-orange-100 rounded-full">
                   <Award size={20} className="text-[#FF7043]" />
                 </div>
-                <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                <span className="px-3 py-1 text-xs font-medium rounded-full text-slate-600 bg-slate-100">
                   Global
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">{dashboardSummary.totalCoverage}</h3>
+              <h3 className="mb-1 text-2xl font-bold text-gray-900">{dashboardSummary.totalCoverage}</h3>
               <p className="text-base text-slate-600">Total Coverage Amount</p>
-              <p className="text-sm text-slate-600 mt-1">Great coverage for your peace of mind.</p>
+              <p className="mt-1 text-sm text-slate-600">Great coverage for your peace of mind.</p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-md border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer">
+            <div className="p-6 transition-shadow bg-white border shadow-md cursor-pointer rounded-xl border-slate-200 hover:shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-orange-100 rounded-full flex items-center justify-center">
+                <div className="flex items-center justify-center p-3 bg-orange-100 rounded-full">
                   <Calendar size={20} className="text-[#FF7043]" />
                 </div>
-                <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                <span className="px-3 py-1 text-xs font-medium rounded-full text-slate-600 bg-slate-100">
                   Future Benefits
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">₦{dashboardSummary.upcomingPaymentsCount.toLocaleString()}</h3>
+              <h3 className="mb-1 text-2xl font-bold text-gray-900">₦{dashboardSummary.upcomingPaymentsCount.toLocaleString()}</h3>
               <p className="text-base text-slate-600">Future Savings</p>
-              <p className="text-sm text-blue-600 flex items-center mt-1">
+              <p className="flex items-center mt-1 text-sm text-blue-600">
                 <CheckCircle size={14} className="mr-1" /> Keep up the great planning!
               </p>
             </div>
-            <div className="bg-white rounded-xl p-6 shadow-md border border-slate-200 hover:shadow-lg transition-shadow cursor-pointer">
+            <div className="p-6 transition-shadow bg-white border shadow-md cursor-pointer rounded-xl border-slate-200 hover:shadow-lg">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-orange-100 rounded-full flex items-center justify-center">
+                <div className="flex items-center justify-center p-3 bg-orange-100 rounded-full">
                   <Briefcase size={20} className="text-[#FF7043]" />
                 </div>
-                <span className="text-xs text-slate-600 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                <span className="px-3 py-1 text-xs font-medium rounded-full text-slate-600 bg-slate-100">
                   In Progress
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-1">{claimsData.filter(c => c.status === 'Submitted').length}</h3>
+              <h3 className="mb-1 text-2xl font-bold text-gray-900">{claimsData.filter(c => c.status === 'Submitted').length}</h3>
               <p className="text-base text-slate-600">Claims Submitted</p>
-              <p className="text-sm text-orange-600 mt-1">
+              <p className="mt-1 text-sm text-orange-600">
                 {claimsData.filter(c => c.status === 'Submitted').length > 0 ? "We're on it!" : "All clear, no pending claims!"}
               </p>
             </div>
           </div>
           {/* Main Content Areas */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Left Column (2/3 width) */}
-            <div className="lg:col-span-2 space-y-8 min-w-0">
+            <div className="min-w-0 space-y-8 lg:col-span-2">
               {/* Chatbot Spotlight Section */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full opacity-50"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-50 rounded-tr-full opacity-50"></div>
-                <div className="relative z-10 p-4 bg-orange-100 rounded-2xl flex-shrink-0">
+              <div className="relative flex flex-col items-center gap-8 p-8 overflow-hidden bg-white border shadow-md rounded-xl border-slate-200 md:flex-row">
+                <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-50 bg-orange-50"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 rounded-tr-full opacity-50 bg-orange-50"></div>
+                <div className="relative z-10 flex-shrink-0 p-4 bg-orange-100 rounded-2xl">
                   <MessageCircle size={64} className="text-[#FF7043]" />
                 </div>
-                <div className="flex-1 text-center md:text-left relative z-10 leading-relaxed min-w-0">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Meet InsureLink AI: Your Personal Insurance Assistant</h2>
-                  <p className="text-lg text-slate-600 mb-6 max-w-lg mx-auto md:mx-0">
+                <div className="relative z-10 flex-1 min-w-0 leading-relaxed text-center md:text-left">
+                  <h2 className="mb-2 text-3xl font-bold text-gray-900">Meet InsureLink AI: Your Personal Insurance Assistant</h2>
+                  <p className="max-w-lg mx-auto mb-6 text-lg text-slate-600 md:mx-0">
                     Get instant answers, personalized advice, and seamless support 24/7. Our intelligent chatbot is here to simplify your insurance journey.
                   </p>
                   <Link
@@ -692,9 +692,9 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* Recent Activity Log */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">Recent Activities</h2>
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
+                  <h2 className="mb-1 text-2xl font-semibold text-gray-900">Recent Activities</h2>
                   <p className="text-sm text-slate-600">A snapshot of your latest transactions and updates.</p>
                 </div>
                 <div className="p-6">
@@ -702,30 +702,30 @@ const Dashboard = () => {
                     <table className="min-w-full divide-y divide-slate-200">
                       <thead className="bg-slate-50">
                         <tr>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-slate-500">
                             Transaction ID
                           </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-slate-500">
                             Policy
                           </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-slate-500">
                             Amount
                           </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-slate-500">
                             Date
                           </th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase text-slate-500">
                             Status
                           </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-slate-100">
                         {activityLog.map(activity => (
-                          <tr key={activity.id} className="hover:bg-slate-50 cursor-pointer">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{activity.id}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{activity.policy}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{activity.amount === "₦0" ? "N/A" : activity.amount}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{activity.date}</td>
+                          <tr key={activity.id} className="cursor-pointer hover:bg-slate-50">
+                            <td className="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">{activity.id}</td>
+                            <td className="px-6 py-4 text-sm whitespace-nowrap text-slate-600">{activity.policy}</td>
+                            <td className="px-6 py-4 text-sm whitespace-nowrap text-slate-600">{activity.amount === "₦0" ? "N/A" : activity.amount}</td>
+                            <td className="px-6 py-4 text-sm whitespace-nowrap text-slate-600">{activity.date}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${activity.status === 'Completed' ? 'bg-green-100 text-green-800' : activity.status === 'Claim Filed' ?
                                 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'}`}>
@@ -740,21 +740,21 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* Just for You: Personalized Tips Section */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">Just for You: Personalized Tips</h2>
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
+                  <h2 className="mb-1 text-2xl font-semibold text-gray-900">Just for You: Personalized Tips</h2>
                   <p className="text-sm text-slate-600">Recommendations tailored to your profile.</p>
                 </div>
                 <div className="p-6 space-y-4">
                   {getPersonalizedTips().map((tip, index) => (
-                    <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row items-start md:items-center gap-6 relative overflow-hidden hover:shadow-md transition-shadow">
+                    <div key={index} className="relative flex flex-col items-start gap-6 p-6 overflow-hidden transition-shadow bg-white border shadow-sm rounded-xl border-slate-200 md:flex-row md:items-center hover:shadow-md">
                       <div className="absolute top-0 right-0 w-16 h-16 rounded-bl-full opacity-30" style={{ backgroundColor: tip.bgColor.replace('bg-', '').replace('-50', '') === 'orange' ? '#fff7ed' : tip.bgColor === 'bg-blue-50' ? '#eff6ff' : tip.bgColor === 'bg-green-50' ? '#f0fdf4' : tip.bgColor === 'bg-purple-50' ? '#faf5ff' : '#f9fafb' }}></div>
-                      <div className="relative z-10 p-3 rounded-2xl flex-shrink-0" style={{ backgroundColor: tip.bgColor.replace('bg-', '').replace('-50', '') === 'orange' ? '#fed7aa' : tip.bgColor === 'bg-blue-50' ? '#dbeafe' : tip.bgColor === 'bg-green-50' ? '#dcfce7' : tip.bgColor === 'bg-purple-50' ? '#f3e8ff' : '#f1f5f9' }}>
+                      <div className="relative z-10 flex-shrink-0 p-3 rounded-2xl" style={{ backgroundColor: tip.bgColor.replace('bg-', '').replace('-50', '') === 'orange' ? '#fed7aa' : tip.bgColor === 'bg-blue-50' ? '#dbeafe' : tip.bgColor === 'bg-green-50' ? '#dcfce7' : tip.bgColor === 'bg-purple-50' ? '#f3e8ff' : '#f1f5f9' }}>
                         <tip.icon size={32} className={tip.textColor} />
                       </div>
-                      <div className="flex-1 text-center md:text-left relative z-10 min-w-0">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{tip.title}</h3>
-                        <p className="text-base text-slate-600 mb-4 max-w-lg mx-auto md:mx-0">
+                      <div className="relative z-10 flex-1 min-w-0 text-center md:text-left">
+                        <h3 className="mb-2 text-xl font-semibold text-gray-900">{tip.title}</h3>
+                        <p className="max-w-lg mx-auto mb-4 text-base text-slate-600 md:mx-0">
                           {tip.description}
                         </p>
                         {tip.cta && (
@@ -772,20 +772,20 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* Policy Insights (Replaced Upcoming Renewals) */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">Your Coverage Insights</h2>
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
+                  <h2 className="mb-1 text-2xl font-semibold text-gray-900">Your Coverage Insights</h2>
                   <p className="text-sm text-slate-600">Proactive tips to maximize your insurance benefits.</p>
                 </div>
                 <div className="p-6 space-y-4">
                   {policyInsights.map((insight, index) => (
-                    <div key={index} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col md:flex-row items-start md:items-center gap-6 relative overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
-                      <div className="relative z-10 p-3 rounded-2xl flex-shrink-0" style={{ backgroundColor: insight.bgColor.replace('bg-', '').replace('-50', '') === 'orange' ? '#fed7aa' : insight.bgColor === 'bg-blue-50' ? '#dbeafe' : insight.bgColor === 'bg-green-50' ? '#dcfce7' : insight.bgColor === 'bg-purple-50' ? '#f3e8ff' : '#f1f5f9' }}>
+                    <div key={index} className="relative flex flex-col items-start gap-6 p-6 overflow-hidden transition-shadow bg-white border shadow-sm cursor-pointer rounded-xl border-slate-200 md:flex-row md:items-center hover:shadow-md">
+                      <div className="relative z-10 flex-shrink-0 p-3 rounded-2xl" style={{ backgroundColor: insight.bgColor.replace('bg-', '').replace('-50', '') === 'orange' ? '#fed7aa' : insight.bgColor === 'bg-blue-50' ? '#dbeafe' : insight.bgColor === 'bg-green-50' ? '#dcfce7' : insight.bgColor === 'bg-purple-50' ? '#f3e8ff' : '#f1f5f9' }}>
                         <insight.icon size={32} className={insight.textColor} />
                       </div>
-                      <div className="flex-1 text-center md:text-left relative z-10 min-w-0">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{insight.title}</h3>
-                        <p className="text-base text-slate-600 mb-4 max-w-lg mx-auto md:mx-0">
+                      <div className="relative z-10 flex-1 min-w-0 text-center md:text-left">
+                        <h3 className="mb-2 text-xl font-semibold text-gray-900">{insight.title}</h3>
+                        <p className="max-w-lg mx-auto mb-4 text-base text-slate-600 md:mx-0">
                           {insight.description}
                         </p>
                         {insight.cta && (
@@ -803,20 +803,20 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* Dedicated Payments Section (Moved to bottom of left column) */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full opacity-50"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-50 rounded-tr-full opacity-50"></div>
-                <div className="relative z-10 p-4 bg-orange-100 rounded-2xl flex-shrink-0">
+              <div className="relative flex flex-col items-center gap-8 p-8 overflow-hidden bg-white border shadow-md rounded-xl border-slate-200 md:flex-row">
+                <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-50 bg-orange-50"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 rounded-tr-full opacity-50 bg-orange-50"></div>
+                <div className="relative z-10 flex-shrink-0 p-4 bg-orange-100 rounded-2xl">
                   <CreditCard size={64} className="text-[#FF7043]" />
                 </div>
-                <div className="flex-1 text-center md:text-left relative z-10 leading-relaxed min-w-0">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Seamless Payments, Your Way</h2>
-                  <p className="text-lg text-slate-600 mb-6 max-w-lg mx-auto md:mx-0">
+                <div className="relative z-10 flex-1 min-w-0 leading-relaxed text-center md:text-left">
+                  <h2 className="mb-2 text-3xl font-bold text-gray-900">Seamless Payments, Your Way</h2>
+                  <p className="max-w-lg mx-auto mb-6 text-lg text-slate-600 md:mx-0">
                     Experience unparalleled convenience in managing your insurance finances. InsureLink supports a wide array of payment options, including popular fintech platforms like OPay and Moniepoint, ensuring a smooth and secure transaction every time.
                   </p>
-                  <div className="flex items-center justify-center md:justify-start gap-4 mb-6">
-                    <img src={OpayLogo} alt="OPay" className="h-8 w-auto" />
-                    <img src={MoniepointLogo} alt="Moniepoint" className="h-8 w-auto" />
+                  <div className="flex items-center justify-center gap-4 mb-6 md:justify-start">
+                    <img src={OpayLogo} alt="OPay" className="w-auto h-8" />
+                    <img src={MoniepointLogo} alt="Moniepoint" className="w-auto h-8" />
                   </div>
                   <Link
                     to="/payment-page"
@@ -828,15 +828,15 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* New: Dedicated Contact Support Section */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-bl-full opacity-50"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-50 rounded-tr-full opacity-50"></div>
-                <div className="relative z-10 p-4 bg-orange-100 rounded-2xl flex-shrink-0">
+              <div className="relative flex flex-col items-center gap-8 p-8 overflow-hidden bg-white border shadow-md rounded-xl border-slate-200 md:flex-row">
+                <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-50 bg-orange-50"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 rounded-tr-full opacity-50 bg-orange-50"></div>
+                <div className="relative z-10 flex-shrink-0 p-4 bg-orange-100 rounded-2xl">
                   <Phone size={64} className="text-[#FF7043]" />
                 </div>
-                <div className="flex-1 text-center md:text-left relative z-10 leading-relaxed min-w-0">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Need Personalized Assistance?</h2>
-                  <p className="text-lg text-slate-600 mb-6 max-w-lg mx-auto md:mx-0">
+                <div className="relative z-10 flex-1 min-w-0 leading-relaxed text-center md:text-left">
+                  <h2 className="mb-2 text-3xl font-bold text-gray-900">Need Personalized Assistance?</h2>
+                  <p className="max-w-lg mx-auto mb-6 text-lg text-slate-600 md:mx-0">
                     Our dedicated support team is always ready to provide you with expert guidance and prompt solutions. Reach out to us for any questions about your policies, claims, or general inquiries. Your peace of mind is our priority.
                   </p>
                   <Link
@@ -850,16 +850,16 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Right Column (1/3 width) */}
-            <div className="lg:col-span-1 space-y-8 min-w-0">
+            <div className="min-w-0 space-y-8 lg:col-span-1">
               {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">Quick Actions</h2>
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
+                  <h2 className="mb-1 text-2xl font-semibold text-gray-900">Quick Actions</h2>
                   <p className="text-base text-slate-600">Your shortcuts to essential services.</p>
                 </div>
                 <div className="p-6 space-y-4">
                   {quickActionsData.map((action, index) => (
-                    <Link key={index} to={action.link} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+                    <Link key={index} to={action.link} className="flex items-center justify-between p-4 transition-colors rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
                       <div className="flex items-center space-x-4">
                         <div className={`p-3 rounded-full ${action.bgColor}`}>
                           <action.icon size={24} className={action.textColor} />
@@ -875,9 +875,9 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* Why Choose InsureLink */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">Why Choose InsureLink?</h2>
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
+                  <h2 className="mb-1 text-2xl font-semibold text-gray-900">Why Choose InsureLink?</h2>
                   <p className="text-base text-slate-600">Our commitment to your peace of mind.</p>
                 </div>
                 <div className="p-6 space-y-4">
@@ -895,10 +895,10 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* Policy Overview (Recent Policies) */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200 flex items-center justify-between">
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
                   <div>
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-1">Your Essential Coverage</h2>
+                    <h2 className="mb-1 text-2xl font-semibold text-gray-900">Your Essential Coverage</h2>
                     <p className="text-base text-slate-600">Tailored solutions for your peace of mind</p>
                   </div>
                   <Link to="/policies" className="text-[#FF7043] text-sm font-medium hover:underline flex items-center gap-1 cursor-pointer">
@@ -907,19 +907,19 @@ const Dashboard = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-4 p-6">
                   {policiesOverview.slice(0, 4).map(policy => (
-                    <div key={policy.id} className="bg-white rounded-lg border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                    <div key={policy.id} className="p-5 transition-shadow bg-white border rounded-lg shadow-sm cursor-pointer border-slate-200 hover:shadow-md">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-slate-100 rounded-full">
+                          <div className="p-2 rounded-full bg-slate-100">
                             <policy.icon size={18} className="text-[#FF7043]" />
                           </div>
-                          <h4 className="font-semibold text-gray-900 text-base">{policy.type}</h4>
+                          <h4 className="text-base font-semibold text-gray-900">{policy.type}</h4>
                         </div>
                         <span className={`px-2 py-0.5 rounded-full font-medium ${policy.status === 'Active' ? 'bg-green-100 text-green-800 text-xs' : 'bg-yellow-100 text-yellow-800 text-xs'}`}>
                           {policy.status}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-600 mb-1">Coverage: <span className="font-medium text-gray-900">{policy.coverage}</span></p>
+                      <p className="mb-1 text-sm text-slate-600">Coverage: <span className="font-medium text-gray-900">{policy.coverage}</span></p>
                       <p className="text-sm text-slate-600">Renewal: <span className="font-medium text-gray-900">{policy.renewalDate}</span></p>
                       <p className="text-sm text-slate-600">Premium Due: <span className="font-medium text-gray-900">{policy.premiumDue}</span></p>
                     </div>
@@ -927,10 +927,10 @@ const Dashboard = () => {
                 </div>
               </div>
               {/* Claims Overview */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200 flex items-center justify-between">
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
                   <div>
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-1">Claims Overview</h2>
+                    <h2 className="mb-1 text-2xl font-semibold text-gray-900">Claims Overview</h2>
                     <p className="text-base text-slate-600">Track your pending claims.</p>
                   </div>
                   <Link to="/claims" className="text-[#FF7043] text-sm font-medium hover:underline flex items-center gap-1 cursor-pointer">
@@ -939,7 +939,7 @@ const Dashboard = () => {
                 </div>
                 <div className="p-6 space-y-4">
                   {claimToDisplay ? ( // Only render if a claim to display is found
-                    <div className="bg-white p-4 rounded-lg shadow-sm border border-orange-200">
+                    <div className="p-4 bg-white border border-orange-200 rounded-lg shadow-sm">
                       <div className="flex items-center justify-between mb-2">
                         <p className="text-sm font-medium text-gray-900">Claim <span className="text-[#FF7043]">#{claimToDisplay.id}</span> - {claimToDisplay.type}</p>
                         <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
@@ -948,25 +948,25 @@ const Dashboard = () => {
                           {claimToDisplay.status}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-600 mb-1">Policy: <span className="font-medium text-gray-900">{claimToDisplay.policy}</span></p>
+                      <p className="mb-1 text-sm text-slate-600">Policy: <span className="font-medium text-gray-900">{claimToDisplay.policy}</span></p>
                       <p className="text-sm text-slate-600">Filed On: <span className="font-medium text-gray-900">{claimToDisplay.dateFiled}</span></p>
-                      <p className="text-sm font-medium text-orange-700 mt-1">Status: {claimToDisplay.status}</p>
+                      <p className="mt-1 text-sm font-medium text-orange-700">Status: {claimToDisplay.status}</p>
                     </div>
                   ) : (
-                    <div className="p-4 text-center text-slate-500 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="p-4 text-center border rounded-lg text-slate-500 bg-slate-50 border-slate-200">
                       <p>No claims currently in review.</p>
                     </div>
                   )}
                 </div>
               </div>
               {/* InsureLink Community & Support */}
-              <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                <div className="p-6 bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-1">Community & Support</h2>
+              <div className="overflow-hidden bg-white border shadow-md rounded-xl border-slate-200">
+                <div className="p-6 border-b bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200">
+                  <h2 className="mb-1 text-2xl font-semibold text-gray-900">Community & Support</h2>
                   <p className="text-base text-slate-600">Connect, learn, and get help from our vibrant community.</p>
                 </div>
                 <div className="p-6 space-y-4">
-                  <Link to="/community" className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+                  <Link to="/community" className="flex items-center justify-between p-4 transition-colors rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
                     <div className="flex items-center space-x-4">
                       <div className="p-3 bg-green-100 rounded-full">
                         <Users size={24} className="text-green-700" />
@@ -978,7 +978,7 @@ const Dashboard = () => {
                     </div>
                     <ChevronRight size={20} className="text-slate-400" />
                   </Link>
-                  <Link to="/faq" className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+                  <Link to="/faq" className="flex items-center justify-between p-4 transition-colors rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
                     <div className="flex items-center space-x-4">
                       <div className="p-3 bg-blue-100 rounded-full">
                         <MessageCircle size={24} className="text-blue-700" />
@@ -990,7 +990,7 @@ const Dashboard = () => {
                     </div>
                     <ChevronRight size={20} className="text-slate-400" />
                   </Link>
-                  <Link to="/contact" className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
+                  <Link to="/contact" className="flex items-center justify-between p-4 transition-colors rounded-lg cursor-pointer bg-slate-50 hover:bg-slate-100">
                     <div className="flex items-center space-x-4">
                       <div className="p-3 bg-orange-100 rounded-full">
                         <Phone size={24} className="text-[#FF7043]" />
