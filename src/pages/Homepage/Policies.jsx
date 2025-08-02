@@ -1,7 +1,7 @@
 // src/pages/Policies/Policies.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import InsureLinkLogo from '../../InsureLink.jpg'; // Ensure this path is correct
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 
 import {
     Home as HomeIcon, Car, Briefcase, Heart, FileText, Calendar, Wallet, CheckCircle, Clock,

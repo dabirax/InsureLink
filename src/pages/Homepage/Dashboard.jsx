@@ -5,9 +5,9 @@ import {
   Menu as MenuIcon, X, FileText, Award, Calendar, Briefcase, MessageCircle,
   Bell, User, Settings, LogOut, Search, Shield, ArrowRight, Home, Users, DollarSign, CheckCircle, ChevronDown, TrendingUp, Star, CreditCard, ChevronRight, Clock, Zap, Phone
 } from 'lucide-react';
-import InsureLinkLogo from '../../InsureLink.jpg'; // Ensure this path is correct
-import OpayLogo from '../../opay.png'; // Assuming opay.png is in src/
-import MoniepointLogo from '../../moniepoint.png'; // Assuming moniepoint.png is in src/
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
+import OpayLogo from "../../assets/opay.png";
+import MoniepointLogo from "../../assets/moniepoint.png";
 
 // Mock Data (will be replaced by actual data fetching for user details)
 const defaultUserData = {

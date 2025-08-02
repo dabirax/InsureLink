@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import InsureLinkLogo from '../../InsureLink.jpg';
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 import {
     Bell, User, ChevronDown, Search, DollarSign, CalendarDays, Download, Settings as SettingsIcon, LogOut, ReceiptText, Wallet, ArrowUpRight, ArrowDownLeft
 } from 'lucide-react';

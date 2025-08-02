@@ -1,7 +1,7 @@
 // src/pages/Notifications/Notifications.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import InsureLinkLogo from '../../InsureLink.jpg'; // Corrected path assumption
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 
 import {
     Bell, User, ChevronDown, Settings as SettingsIcon, LogOut,

@@ -249,7 +249,7 @@ const Chatbot = () => {
   return (
     <div className="min-h-screen bg-white font-['Poppins','Inter','SF Pro Display','system-ui',sans-serif] selection:bg-[#FF7043]/20 selection:text-[#FF7043]">
       <div className="bg-white shadow-sm border-b border-[#E2E8F0] p-5 sticky top-0 z-20">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mx-auto max-w-7xl">
           <div className="flex items-center gap-4">
             <button
               onClick={() => window.history.back()}
@@ -263,12 +263,12 @@ const Chatbot = () => {
                   <Bot className="w-6 h-6" />
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-ping absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                  <div className="absolute w-2 h-2 transform -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400 animate-ping top-1/2 left-1/2"></div>
                 </div>
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-gray-900 tracking-tight">AI Insurance Guide</h1>
-                <p className="text-sm text-gray-500 font-medium">Always ready to help • Online</p>
+                <h1 className="text-xl font-semibold tracking-tight text-gray-900">AI Insurance Guide</h1>
+                <p className="text-sm font-medium text-gray-500">Always ready to help • Online</p>
               </div>
             </div>
           </div>
@@ -278,7 +278,7 @@ const Chatbot = () => {
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="bg-transparent border-none outline-none text-sm font-medium text-gray-700 cursor-pointer"
+              className="text-sm font-medium text-gray-700 bg-transparent border-none outline-none cursor-pointer"
             >
               {languages.map(lang => (
                 <option key={lang} value={lang}>{lang}</option>
@@ -289,8 +289,8 @@ const Chatbot = () => {
       </div>
 
       <div className="flex h-[calc(100vh-88px)] max-w-7xl mx-auto">
-        <div className="flex-1 flex flex-col bg-gradient-to-br from-gray-50/30 to-white/50">
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth custom-scrollbar">
+        <div className="flex flex-col flex-1 bg-gradient-to-br from-gray-50/30 to-white/50">
+          <div className="flex-1 p-6 space-y-6 overflow-y-auto scroll-smooth custom-scrollbar">
             {messages.map((message) => (
               <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className="flex items-start gap-3.5 max-w-md lg:max-w-2xl">
@@ -320,10 +320,10 @@ const Chatbot = () => {
             {isTyping && <TypingIndicator />}
             <div ref={messagesEndRef} />
             {messages.length === 1 && (
-              <div className="flex flex-col items-center justify-center h-full text-center py-10">
-                <MessageCircle size={64} className="text-gray-300 mb-6" />
-                <h2 className="text-2xl font-semibold text-gray-700 mb-2">Start a conversation with InsureBot!</h2>
-                <p className="text-gray-500 max-w-sm">Ask any question or pick from the quick questions on the right to get started.</p>
+              <div className="flex flex-col items-center justify-center h-full py-10 text-center">
+                <MessageCircle size={64} className="mb-6 text-gray-300" />
+                <h2 className="mb-2 text-2xl font-semibold text-gray-700">Start a conversation with InsureBot!</h2>
+                <p className="max-w-sm text-gray-500">Ask any question or pick from the quick questions on the right to get started.</p>
               </div>
             )}
           </div>
@@ -337,7 +337,7 @@ const Chatbot = () => {
                   className="p-2.5 text-gray-500 hover:text-white hover:bg-[#FF7043] rounded-xl transition-all duration-100 flex-shrink-0 group cursor-pointer border border-transparent hover:border-[#FF7043]"
                   title="Upload file"
                 >
-                  <Paperclip className="w-5 h-5 group-hover:rotate-12 transition-transform duration-100" />
+                  <Paperclip className="w-5 h-5 transition-transform duration-100 group-hover:rotate-12" />
                 </button>
 
                 <div className="flex-1 min-w-0">
@@ -407,7 +407,7 @@ const Chatbot = () => {
                 >
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-[#FF7043]/60 rounded-full mt-2.5 group-hover:bg-[#FF7043] group-hover:scale-125 transition-all duration-200 flex-shrink-0"></div>
-                    <span className="group-hover:text-gray-900 transition-colors duration-200 leading-relaxed font-medium">{question}</span>
+                    <span className="font-medium leading-relaxed transition-colors duration-200 group-hover:text-gray-900">{question}</span>
                   </div>
                 </button>
               ))}

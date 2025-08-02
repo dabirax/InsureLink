@@ -4,7 +4,7 @@ import {
   User, Settings, FileText, TrendingUp, Award, Bell, ChevronDown, LogOut, Home, MessageCircle, Briefcase, DollarSign, CheckCircle, Calendar, Menu as MenuIcon, Edit, Save, XCircle, Search, Star
 } from 'lucide-react';
 import { Dialog, Transition, Menu } from '@headlessui/react';
-import InsureLinkLogo from '../../InsureLink.jpg'; // Ensure this path is correct
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 
 const Profile = () => {
   const location = useLocation();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logoImage from '../../InsureLink.jpg'; // Assuming the logo path is correct
-import forgotImage from '../../Forgot.png'; // The image from figma
+import logoImage from "../../assets/InsureLink.jpg";
+import forgotImage from "../../assets/Forgot.PNG";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

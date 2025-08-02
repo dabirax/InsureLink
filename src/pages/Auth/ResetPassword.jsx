@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
-import logoImage from '../../InsureLink.jpg'; // Assuming the logo path is correct
-// import resetPasswordImage from '../../ResetPassword.png'; // Assuming you have a reset password illustration
+import logoImage from '../../assets/InsureLink.jpg';
+// import resetPasswordImage from '../../assets/ResetPassword.png'; // Assuming you have a reset password illustration
 
 const ResetPassword = () => {
   const navigate = useNavigate();

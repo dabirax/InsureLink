@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LogOut, Home, RefreshCw, CheckCircle } from 'lucide-react';
-import InsureLinkLogo from '../../InsureLink.jpg'; // Ensure this path is correct
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 
 const Logout = () => {
   const [logoutStatus, setLogoutStatus] = useState('loggingOut'); // 'loggingOut', 'success'

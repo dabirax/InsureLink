@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import InsureLinkLogo from '../../InsureLink.jpg'; 
-import OpayLogo from '../../opay.png'; // Assuming opay.png is in src/
-import MoniepointLogo from '../../moniepoint.png';
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
+import OpayLogo from "../../assets/opay.png";
+import MoniepointLogo from "../../assets/moniepoint.png";
 import {
   Shield, ArrowLeft, CreditCard, Smartphone, Building, Calendar,
   CheckCircle, Star, Lock, Zap, TrendingUp, Award, Users,

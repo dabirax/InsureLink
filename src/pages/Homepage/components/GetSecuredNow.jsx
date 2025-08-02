@@ -9,7 +9,7 @@ const GetSecuredNow = () => {
 
   return (
     <button 
-      className="bg-[#FF7043] rounded-sm p-5 hover:scale-105 text-[#fff] text-sm"
+      className="bg-[#FF7043] rounded-full p-3 hover:scale-105 text-[#fff] text-sm"
       onClick={handleGetSecured}
     >
       Get Secured Now

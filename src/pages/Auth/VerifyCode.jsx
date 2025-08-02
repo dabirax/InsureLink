@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import logoImage from '../../InsureLink.jpg'; // Assuming the logo path is correct
-import codeHandImage from '../../CodeHand.png'; // The image from figma
+import logoImage from "../../assets/InsureLink.jpg";
+import codeHandImage from "../../assets/CodeHand.PNG";
 
 const VerifyCode = () => {
   const navigate = useNavigate();

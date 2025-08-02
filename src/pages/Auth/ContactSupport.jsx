@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'; // Added useRef, useEffect
 import { Link, useLocation } from 'react-router-dom'; // Added Link, useLocation
-import InsureLinkLogo from '../../InsureLink.jpg'; // Import the logo image
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 import {
     Bell,
     ChevronDown,

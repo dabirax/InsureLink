@@ -1,7 +1,7 @@
 // src/pages/Claims/Claims.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import InsureLinkLogo from '../../InsureLink.jpg'; // Ensure this path is correct
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 
 import {
     Bell, User, ChevronDown, Search, FileText, ShieldCheck, CalendarDays, ScrollText, DollarSign, 

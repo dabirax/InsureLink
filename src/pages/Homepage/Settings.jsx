@@ -1,12 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import InsureLinkLogo from '../../InsureLink.jpg'; // Path to your logo
+import InsureLinkLogo from "../../assets/InsureLink.jpg";
 import {
-  Bell, User, ChevronDown, Edit, Plus, Mail, Phone, Moon, Trash2,
-  Lock, Activity, Code, Settings as SettingsIcon, ShieldCheck, MailOpen, MessageSquare, BellRing, Share2, HelpCircle, LogOut, LayoutDashboard
-} from 'lucide-react'; // Expanded icon set
-import OpayLogo from '../../opay.png'; // Assuming opay.png is in src/
-import MoniepointLogo from '../../moniepoint.png'; // Assuming moniepoint.png is in src/
+  Bell,
+  User,
+  ChevronDown,
+  Edit,
+  Plus,
+  Mail,
+  Phone,
+  Moon,
+  Trash2,
+  Lock,
+  Activity,
+  Code,
+  Settings as SettingsIcon,
+  ShieldCheck,
+  MailOpen,
+  MessageSquare,
+  BellRing,
+  Share2,
+  HelpCircle,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react"; // Expanded icon set
+import OpayLogo from "../../assets/opay.png";
+import MoniepointLogo from "../../assets/moniepoint.png";
 
 // Dummy Data
 const currentUser = {
