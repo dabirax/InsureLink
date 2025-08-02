@@ -415,7 +415,7 @@ const Dashboard = () => {
             <span>Claims</span>
           </Link>
           <Link to="/payment-page" className="flex items-center space-x-3 p-3 rounded-lg text-slate-700 hover:bg-slate-100 hover:text-[#FF7043] transition-colors cursor-pointer">
-            <DollarSign size={20} />
+            <CreditCardIcon size={20} />
             <span>Payments</span>
           </Link>
           {/* Updated Link to pass user state */}
